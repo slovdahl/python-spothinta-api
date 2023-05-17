@@ -1,18 +1,9 @@
-<!-- Header -->
-![alt Header of the easyEnergy package](https://raw.githubusercontent.com/klaasnicolaas/python-easyenergy/main/assets/header_easyenergy-min.png)
+# Spot-Hinta.fi Python client
 
-<!-- PROJECT SHIELDS -->
+Asynchronous Python client for the [spot-hinta.fi][spothinta] API.
+
 [![GitHub Release][releases-shield]][releases]
 [![Python Versions][python-versions-shield]][pypi]
-![Project Stage][project-stage-shield]
-![Project Maintenance][maintenance-shield]
-[![License][license-shield]](LICENSE)
-
-[![GitHub Activity][commits-shield]][commits-url]
-[![PyPi Downloads][downloads-shield]][downloads-url]
-[![GitHub Last Commit][last-commit-shield]][commits-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
 
 [![Code Quality][code-quality-shield]][code-quality]
 [![Build Status][build-shield]][build-url]
@@ -21,50 +12,21 @@
 [![Maintainability][maintainability-shield]][maintainability-url]
 [![Code Coverage][codecov-shield]][codecov-url]
 
-Asynchronous Python client for the easyEnergy API.
-
 ## About
 
-A python package with which you can retrieve the dynamic energy/gas prices from [easyEnergy][easyenergy]. Third parties who purchase their energy via easyEnergy (as far as is known):
+A Python package with which you can retrieve the energy market prices from [spot-hinta.fi][spothinta].
 
-- [NieuweStroom](https://nieuwestroom.nl)
+Based on the [easyEnergy][easyenergy] library by @klaasnicolaas.
 
 ## Installation
 
 ```bash
-pip install easyenergy
+pip install spothinta
 ```
 
 ## Data
 
-**note**: Currently only tested for day/tomorrow prices
-
-You can read the following datasets with this package:
-
-### Electricity prices
-
-**note**: easyEnergy has separate prices for usage and return to grid, which also differ per hour.
-
-The energy prices are different every hour, after 15:00 (more usually already at 14:00) the prices for the next day are published and it is therefore possible to retrieve these data.
-
-
-- Current/Next[x] hour electricity market price (float)
-- Lowest energy price (float)
-- Highest energy price (float)
-- Average electricity price (float)
-- Time of highest price (datetime)
-- Time of lowest price (datetime)
-- Percentage of the current price compared to the maximum price
-- Number of hours with the current price or better (int)
-
-### Gas prices
-
-The gas prices do not change per hour, but are fixed for 24 hours. Which means that from 06:00 in the morning the new rate for that day will be used.
-
-- Current/Next[x] hour gas market price (float)
-- Lowest gas price (float)
-- Highest gas price (float)
-- Average gas price (float)
+This client currently supports getting today's and tomorrow's  hourly energy prices. The prices for tomorrow are usually published between 14:00 and 15:00. See [spot-hinta.fi API documentation][spothinta-api-docs] for more information about the available data.
 
 ## Example
 
@@ -72,35 +34,18 @@ The gas prices do not change per hour, but are fixed for 24 hours. Which means t
 import asyncio
 
 from datetime import date
-from easyenergy import EasyEnergy
+from spothinta import SpotHinta
 
 
 async def main() -> None:
-    """Show example on fetching the energy prices from easyEnergy."""
-    async with EasyEnergy(incl_vat="true") as client:
-        start_date = date(2022, 12, 7)
-        end_date = date(2022, 12, 7)
-
-        energy = await client.energy_prices(start_date, end_date)
-        gas = await client.gas_prices(start_date, end_date)
+    """Show example on fetching the energy prices from spot-hinta.fi."""
+    async with SpotHinta() as client:
+        energy = await client.energy_prices()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
 ```
-
-### Class Parameters
-
-| Parameter | value Type | Description |
-| :-------- | :--------- | :---------- |
-| `incl_vat` | str (default: **true**) | Include or exclude VAT |
-
-### Function Parameters
-
-| Parameter | value Type | Description |
-| :-------- | :--------- | :---------- |
-| `start_date` | datetime | The start date of the selected period |
-| `end_date` | datetime | The end date of the selected period |
 
 ## Contributing
 
@@ -146,7 +91,7 @@ pre-commit install
 
 As this repository uses the [pre-commit][pre-commit] framework, all changes
 are linted and tested with each commit. You can run all checks and tests
-manually, using the following command:
+manually using the following command:
 
 ```bash
 poetry run pre-commit run --all-files
@@ -162,7 +107,7 @@ poetry run pytest
 
 MIT License
 
-Copyright (c) 2022-2023 Klaas Schoute
+Copyright (c) 2022-2023 Sebastian Lövdahl, Klaas Schoute
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -182,35 +127,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-[easyenergy]: https://www.easyenergy.com
-
 <!-- MARKDOWN LINKS & IMAGES -->
-[build-shield]: https://github.com/klaasnicolaas/python-easyenergy/actions/workflows/tests.yaml/badge.svg
-[build-url]: https://github.com/klaasnicolaas/python-easyenergy/actions/workflows/tests.yaml
-[code-quality-shield]: https://github.com/klaasnicolaas/python-easyenergy/actions/workflows/codeql.yaml/badge.svg
-[code-quality]: https://github.com/klaasnicolaas/python-easyenergy/actions/workflows/codeql.yaml
-[commits-shield]: https://img.shields.io/github/commit-activity/y/klaasnicolaas/python-easyenergy.svg
-[commits-url]: https://github.com/klaasnicolaas/python-easyenergy/commits/main
-[codecov-shield]: https://codecov.io/gh/klaasnicolaas/python-easyenergy/branch/main/graph/badge.svg?token=RYhiDUamT6
-[codecov-url]: https://codecov.io/gh/klaasnicolaas/python-easyenergy
-[downloads-shield]: https://img.shields.io/pypi/dm/easyenergy
-[downloads-url]: https://pypistats.org/packages/easyenergy
-[issues-shield]: https://img.shields.io/github/issues/klaasnicolaas/python-easyenergy.svg
-[issues-url]: https://github.com/klaasnicolaas/python-easyenergy/issues
-[license-shield]: https://img.shields.io/github/license/klaasnicolaas/python-easyenergy.svg
-[last-commit-shield]: https://img.shields.io/github/last-commit/klaasnicolaas/python-easyenergy.svg
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
+[easyenergy]: https://github.com/klaasnicolaas/python-easyenergy
+[spothinta]: https://spot-hinta.fi/
+[spothinta-api-docs]: https://api.spot-hinta.fi/swagger/ui#/(JSON)%20Price%20today%20and%20tomorrow%20(if%20tomorrow%20prices%20exist)/TodayAndDayForward
+
+[build-shield]: https://github.com/slovdahl/python-spothinta/actions/workflows/tests.yaml/badge.svg
+[build-url]: https://github.com/slovdahl/python-spothinta/actions/workflows/tests.yaml
+[code-quality-shield]: https://github.com/slovdahl/python-spothinta/actions/workflows/codeql.yaml/badge.svg
+[code-quality]: https://github.com/slovdahl/python-spothinta/actions/workflows/codeql.yaml
+[codecov-shield]: https://codecov.io/gh/slovdahl/python-spothinta/branch/main/graph/badge.svg?token=RYhiDUamT6
+[codecov-url]: https://codecov.io/gh/slovdahl/python-spothinta
 [maintainability-shield]: https://api.codeclimate.com/v1/badges/8628757a4bde52dbfaf6/maintainability
-[maintainability-url]: https://codeclimate.com/github/klaasnicolaas/python-easyenergy/maintainability
-[project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
+[maintainability-url]: https://codeclimate.com/github/slovdahl/python-spothinta/maintainability
 [pypi]: https://pypi.org/project/easyenergy/
 [python-versions-shield]: https://img.shields.io/pypi/pyversions/easyenergy
-[typing-shield]: https://github.com/klaasnicolaas/python-easyenergy/actions/workflows/typing.yaml/badge.svg
-[typing-url]: https://github.com/klaasnicolaas/python-easyenergy/actions/workflows/typing.yaml
-[releases-shield]: https://img.shields.io/github/release/klaasnicolaas/python-easyenergy.svg
-[releases]: https://github.com/klaasnicolaas/python-easyenergy/releases
-[stars-shield]: https://img.shields.io/github/stars/klaasnicolaas/python-easyenergy.svg
-[stars-url]: https://github.com/klaasnicolaas/python-easyenergy/stargazers
+[typing-shield]: https://github.com/slovdahl/python-spothinta/actions/workflows/typing.yaml/badge.svg
+[typing-url]: https://github.com/slovdahl/python-spothinta/actions/workflows/typing.yaml
+[releases-shield]: https://img.shields.io/github/release/slovdahl/python-spothinta.svg
+[releases]: https://github.com/slovdahl/python-spothinta/releases
 
 [poetry-install]: https://python-poetry.org/docs/#installation
 [poetry]: https://python-poetry.org

@@ -1,4 +1,4 @@
-"""Asynchronous Python client for the easyEnergy API."""
+"""Asynchronous Python client for the spot-hinta.fi API."""
 from pathlib import Path
 
 

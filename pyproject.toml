@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "easyenergy"
+name = "spothinta"
 version = "0.0.0"
-description = "Asynchronous Python client providing energy/gas prices from easyEnergy"
-authors = ["Klaas Schoute <hello@student-techlife.com>"]
-maintainers = ["Klaas Schoute <hello@student-techlife.com>"]
+description = "Asynchronous Python client providing energy prices from spot-hinta.fi"
+authors = [
+  "Sebastian Lövdahl <sebastian.lovdahl@hibox.fi>",
+  "Klaas Schoute <hello@student-techlife.com>"
+]
+maintainers = ["Sebastian Lövdahl <sebastian.lovdahl@hibox.fi>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/klaasnicolaas/python-easyenergy"
-repository = "https://github.com/klaasnicolaas/python-easyenergy"
-documentation = "https://github.com/klaasnicolaas/python-easyenergy"
-keywords = ["energy", "easyenergy", "gas", "prices", "api", "async", "client"]
+keywords = ["energy", "spothinta", "prices", "api", "async", "client"]
 classifiers = [
     "Framework :: AsyncIO",
     "Intended Audience :: Developers",
@@ -22,18 +22,16 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 packages = [
-    { include = "easyenergy" }
+    { include = "spothinta" }
 ]
+
+[tool.poetry.scripts]
+example = "examples.energy:__main__"
 
 [tool.poetry.dependencies]
 aiohttp = ">=3.0.0"
 python = "^3.9"
 yarl = ">=1.6.0"
-aiodns = "^3.0.0"
-
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/klaasnicolaas/python-easyenergy/issues"
-Changelog = "https://github.com/klaasnicolaas/python-easyenergy/releases"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.0.243,<0.0.264"
@@ -60,11 +58,11 @@ types-pytz = ">=2022.7.1,<2024.0.0"
 target-version = ['py39']
 
 [tool.coverage.paths]
-source = ["easyenergy"]
+source = ["spothinta"]
 
 [tool.coverage.run]
 plugins = ["covdefaults"]
-source = ["easyenergy"]
+source = ["spothinta"]
 
 [tool.mypy]
 # Specify the target platform details in config, so your developers are
@@ -155,7 +153,7 @@ mark-parentheses = false
 fixture-parentheses = false
 
 [tool.ruff.isort]
-known-first-party = ["easyenergy"]
+known-first-party = ["spothinta"]
 
 [tool.ruff.mccabe]
 max-complexity = 25

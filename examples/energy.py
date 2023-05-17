@@ -1,63 +1,39 @@
-"""Asynchronous Python client for the easyEnergy API."""
+"""Asynchronous Python client for the spot-hinta.fi API."""
 
 import asyncio
-from datetime import date, timedelta
+from datetime import timedelta
 
 import pytz
 
-from easyenergy import EasyEnergy
+from spothinta import SpotHinta
 
 
 async def main() -> None:
-    """Show example on fetching the energy prices from easyEnergy."""
-    async with EasyEnergy() as client:
-        local = pytz.timezone("Europe/Amsterdam")
-        today = date(2023, 3, 28)
-        tomorrow = date(2023, 3, 29)
+    """Show example on fetching the energy prices from spot-hinta.fi."""
+    async with SpotHinta() as client:
+        local = pytz.timezone("Europe/Helsinki")
 
         # Select your test readings
         switch_e_today: bool = True
-        switch_e_tomorrow: bool = True
 
         if switch_e_today:
-            energy_today = await client.energy_prices(start_date=today, end_date=today)
+            energy_today = await client.energy_prices()
             utc_next_hour = energy_today.utcnow() + timedelta(hours=1)
             print("--- ENERGY TODAY ---")
-            print(f"Extremas usage price: {energy_today.extreme_usage_prices}")
-            print(f"Extremas return price: {energy_today.extreme_return_prices}")
-            print(f"Average usage price: {energy_today.average_usage_price}")
-            print(f"Average return price: {energy_today.average_return_price}")
-            print(f"Percentage max - Usage: {energy_today.pct_of_max_usage}%")
-            print(f"Percentage max - Return: {energy_today.pct_of_max_return}%")
+            print(f"Extremas price: {energy_today.extreme_prices}")
+            print(f"Average price: {energy_today.average_price}")
             print()
 
-            highest_time_usage = energy_today.highest_usage_price_time.astimezone(local)
-            print(f"Highest price time - Usage: {highest_time_usage}")
-            lowest_time_usage = energy_today.lowest_usage_price_time.astimezone(local)
-            print(f"Lowest price time - Usage: {lowest_time_usage}")
+            highest_time = energy_today.highest_price_time.astimezone(local)
+            print(f"Highest price time: {highest_time}")
+            lowest_time = energy_today.lowest_price_time.astimezone(local)
+            print(f"Lowest price time: {lowest_time}")
             print()
-            print(f"Current usage price: {energy_today.current_usage_price}")
-            print(f"Current return price: {energy_today.current_return_price}")
+            print(f"Current price: {energy_today.current_price}")
             print(f"Next hourprice: {energy_today.price_at_time(utc_next_hour)}")
 
-            lower_hours: int = energy_today.hours_priced_equal_or_lower_usage
-            highest_hours: int = energy_today.hours_priced_equal_or_higher_return
-            print(f"Lower hours (usage): {lower_hours}")
-            print(f"Higher hours (return): {highest_hours}")
-
-        if switch_e_tomorrow:
-            energy_tomorrow = await client.energy_prices(tomorrow, tomorrow)
-            print()
-            print("--- ENERGY TOMORROW ---")
-            print(f"Extremas usage price: {energy_tomorrow.extreme_usage_prices}")
-            print(f"Extremas return price: {energy_tomorrow.extreme_return_prices}")
-            print(f"Average usage price: {energy_tomorrow.average_usage_price}")
-            print(f"Average return price: {energy_tomorrow.average_return_price}")
-            print()
-            highest_time = energy_tomorrow.highest_usage_price_time.astimezone(local)
-            print(f"Highest price time - Usage: {highest_time}")
-            lowest_time = energy_tomorrow.lowest_usage_price_time.astimezone(local)
-            print(f"Lowest price time - Usage: {lowest_time}")
+            lower_hours: int = energy_today.hours_priced_equal_or_lower
+            print(f"Lower hours: {lower_hours}")
 
 
 if __name__ == "__main__":
