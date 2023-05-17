@@ -9,14 +9,11 @@ Asynchronous Python client for the [spot-hinta.fi][spothinta] API.
 [![Build Status][build-shield]][build-url]
 [![Typing Status][typing-shield]][typing-url]
 
-[![Maintainability][maintainability-shield]][maintainability-url]
-[![Code Coverage][codecov-shield]][codecov-url]
-
 ## About
 
 A Python package with which you can retrieve the energy market prices from [spot-hinta.fi][spothinta].
 
-Based on the [easyEnergy][easyenergy] library by @klaasnicolaas.
+Based on the [easyEnergy][easyenergy] library by [@klassnicolaas][klassnicolaas].
 
 ## Installation
 
@@ -131,6 +128,7 @@ SOFTWARE.
 [easyenergy]: https://github.com/klaasnicolaas/python-easyenergy
 [spothinta]: https://spot-hinta.fi/
 [spothinta-api-docs]: https://api.spot-hinta.fi/swagger/ui#/(JSON)%20Price%20today%20and%20tomorrow%20(if%20tomorrow%20prices%20exist)/TodayAndDayForward
+[klassnicolaas]: https://github.com/klaasnicolaas
 
 [build-shield]: https://github.com/slovdahl/python-spothinta/actions/workflows/tests.yaml/badge.svg
 [build-url]: https://github.com/slovdahl/python-spothinta/actions/workflows/tests.yaml
