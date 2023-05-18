@@ -13,11 +13,7 @@ from aiohttp.hdrs import METH_GET
 from yarl import URL
 
 from .const import API_HOST
-from .exceptions import (
-    SpotHintaConnectionError,
-    SpotHintaError,
-    SpotHintaNoDataError,
-)
+from .exceptions import SpotHintaConnectionError, SpotHintaError, SpotHintaNoDataError
 from .models import Electricity
 
 
