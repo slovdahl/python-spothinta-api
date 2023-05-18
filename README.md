@@ -5,7 +5,6 @@ Asynchronous Python client for the [spot-hinta.fi][spothinta] API.
 [![GitHub Release][releases-shield]][releases]
 [![Python Versions][python-versions-shield]][pypi]
 
-[![Code Quality][code-quality-shield]][code-quality]
 [![Build Status][build-shield]][build-url]
 [![Typing Status][typing-shield]][typing-url]
 
