@@ -27,7 +27,7 @@ async def test_json_request(aresponses: ResponsesMockServer) -> None:
     )
     async with ClientSession() as session:
         client = SpotHinta(session=session)
-        response = await client._request()
+        response = await client._request("/TodayAndDayForward")
         assert response is not None
         await client.close()
 
@@ -45,11 +45,12 @@ async def test_internal_session(aresponses: ResponsesMockServer) -> None:
         ),
     )
     async with SpotHinta() as client:
-        await client._request()
+        await client._request("/TodayAndDayForward")
 
 
 async def test_timeout(aresponses: ResponsesMockServer) -> None:
     """Test request timeout is handled correctly."""
+
     # Faking a timeout by sleeping
     async def response_handler(_: ClientResponse) -> Response:
         await asyncio.sleep(0.2)
@@ -60,7 +61,7 @@ async def test_timeout(aresponses: ResponsesMockServer) -> None:
     async with ClientSession() as session:
         client = SpotHinta(session=session, request_timeout=0.1)
         with pytest.raises(SpotHintaConnectionError):
-            assert await client._request()
+            assert await client._request("/TodayAndDayForward")
 
 
 async def test_content_type(aresponses: ResponsesMockServer) -> None:
@@ -80,7 +81,7 @@ async def test_content_type(aresponses: ResponsesMockServer) -> None:
             session=session,
         )
         with pytest.raises(SpotHintaError):
-            assert await client._request()
+            assert await client._request("/TodayAndDayForward")
 
 
 async def test_client_error() -> None:
@@ -92,4 +93,4 @@ async def test_client_error() -> None:
             "request",
             side_effect=ClientError,
         ), pytest.raises(SpotHintaConnectionError):
-            assert await client._request()
+            assert await client._request("/TodayAndDayForward")

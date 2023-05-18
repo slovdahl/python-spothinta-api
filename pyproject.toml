@@ -26,7 +26,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-example = "examples.energy:__main__"
+example = "examples.energy:start"
 
 [tool.poetry.dependencies]
 aiohttp = ">=3.0.0"
