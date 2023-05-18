@@ -12,7 +12,7 @@ from aiohttp.client import ClientError, ClientSession
 from aiohttp.hdrs import METH_GET
 from yarl import URL
 
-from .const import API_HOST
+from .const import API_HOST, Region
 from .exceptions import SpotHintaConnectionError, SpotHintaError, SpotHintaNoDataError
 from .models import Electricity
 
@@ -28,7 +28,7 @@ class SpotHinta:
 
     async def _request(
         self,
-        *,
+        uri: str,
         method: str = METH_GET,
         params: dict[str, Any] | None = None,
     ) -> Any:
@@ -56,7 +56,7 @@ class SpotHinta:
         url = URL.build(
             scheme="https",
             host=API_HOST,
-            path="/TodayAndDayForward",
+            path=uri,
         )
 
         headers = {
@@ -100,21 +100,28 @@ class SpotHinta:
 
         return cast(dict[str, Any], await response.json())
 
-    async def energy_prices(self) -> Electricity:
-        """Get energy prices for a given period.
+    async def energy_prices(self, region: Region = Region.FI) -> Electricity:
+        """Get energy prices for today and tomorrow for a region.
 
-        Returns
+        Args:
+        ----
+            region: The region to get prices for.
+
+        Returns:
         -------
             A Python dictionary with the response from spot-hinta.fi.
 
-        Raises
+        Raises:
         ------
-            SpotHintaNoDataError: No energy prices found for this period.
+            SpotHintaNoDataError: No energy prices found.
         """
-        data = await self._request()
+        data = await self._request(
+            uri="/TodayAndDayForward",
+            params={"region": region.name},
+        )
 
         if len(data) == 0:
-            msg = "No energy prices found for this period."
+            msg = "No energy prices found."
             raise SpotHintaNoDataError(msg)
         return Electricity.from_dict(data)
 
