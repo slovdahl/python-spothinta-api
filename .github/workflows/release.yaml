@@ -1,8 +1,7 @@
 ---
 name: Release
 
-# yamllint disable-line rule:truthy
-on:
+on:  # yamllint disable-line rule:truthy
   release:
     types:
       - published
