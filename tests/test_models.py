@@ -5,7 +5,7 @@ import pytest
 from aiohttp import ClientSession
 from aresponses import ResponsesMockServer
 
-from spothinta import Electricity, SpotHinta, SpotHintaNoDataError
+from spothinta_api import Electricity, SpotHinta, SpotHintaNoDataError
 
 from . import load_fixtures
 

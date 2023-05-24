@@ -7,8 +7,8 @@ import pytest
 from aiohttp import ClientError, ClientResponse, ClientSession
 from aresponses import Response, ResponsesMockServer
 
-from spothinta import SpotHinta
-from spothinta.exceptions import SpotHintaConnectionError, SpotHintaError
+from spothinta_api import SpotHinta
+from spothinta_api.exceptions import SpotHintaConnectionError, SpotHintaError
 
 from . import load_fixtures
 

@@ -5,8 +5,8 @@ from datetime import timedelta
 
 import pytz
 
-from spothinta import SpotHinta
-from spothinta.const import Region
+from spothinta_api import SpotHinta
+from spothinta_api.const import Region
 
 
 async def main() -> None:

@@ -1,11 +1,8 @@
 [tool.poetry]
-name = "spothinta"
+name = "spothinta-api"
 version = "0.0.0"
 description = "Asynchronous Python client providing energy prices from spot-hinta.fi"
-authors = [
-  "Sebastian Lövdahl <sebastian.lovdahl@hibox.fi>",
-  "Klaas Schoute <hello@student-techlife.com>"
-]
+authors = ["Sebastian Lövdahl <sebastian.lovdahl@hibox.fi>"]
 maintainers = ["Sebastian Lövdahl <sebastian.lovdahl@hibox.fi>"]
 license = "MIT"
 readme = "README.md"
@@ -22,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 packages = [
-    { include = "spothinta" }
+    { include = "spothinta_api" }
 ]
 
 [tool.poetry.scripts]
@@ -58,11 +55,11 @@ types-pytz = ">=2022.7.1,<2024.0.0"
 target-version = ['py39']
 
 [tool.coverage.paths]
-source = ["spothinta"]
+source = ["spothinta_api"]
 
 [tool.coverage.run]
 plugins = ["covdefaults"]
-source = ["spothinta"]
+source = ["spothinta_api"]
 
 [tool.mypy]
 # Specify the target platform details in config, so your developers are
@@ -153,7 +150,7 @@ mark-parentheses = false
 fixture-parentheses = false
 
 [tool.ruff.isort]
-known-first-party = ["spothinta"]
+known-first-party = ["spothinta_api"]
 
 [tool.ruff.mccabe]
 max-complexity = 25
