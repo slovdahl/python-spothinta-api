@@ -33,4 +33,4 @@ jobs:
       - name: 🏗 Install dependencies
         run: poetry install --no-interaction
       - name: 🚀 Run mypy
-        run: poetry run mypy examples spothinta tests
+        run: poetry run mypy examples spothinta_api tests
