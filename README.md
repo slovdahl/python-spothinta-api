@@ -17,7 +17,7 @@ Based on the [easyEnergy][easyenergy] library by [@klaasnicolaas][klaasnicolaas]
 ## Installation
 
 ```bash
-pip install spothinta
+pip install spothinta-api
 ```
 
 ## Data
