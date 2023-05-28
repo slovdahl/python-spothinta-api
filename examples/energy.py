@@ -3,8 +3,6 @@
 import asyncio
 from datetime import timedelta
 
-import pytz
-
 from spothinta_api import SpotHinta
 from spothinta_api.const import Region
 
@@ -18,8 +16,6 @@ async def main() -> None:
 
 async def print_prices(client: SpotHinta, region: Region) -> None:
     """Print prices for the given region."""
-    pytz.timezone("Europe/Helsinki")
-
     energy_today = await client.energy_prices(region=region)
     utc_next_hour = energy_today.utcnow() + timedelta(hours=1)
     print(f"--- ENERGY TODAY FOR REGION {region.name}---")

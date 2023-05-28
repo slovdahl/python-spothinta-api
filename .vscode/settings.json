@@ -12,5 +12,11 @@
             "source.fixAll": true,
             "source.organizeImports": true
         }
-    }
+    },
+    "python.testing.pytestArgs": [
+        "tests",
+        "--no-cov"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
