@@ -18,22 +18,23 @@ async def main() -> None:
 
 async def print_prices(client: SpotHinta, region: Region) -> None:
     """Print prices for the given region."""
-    local = pytz.timezone("Europe/Helsinki")
+    pytz.timezone("Europe/Helsinki")
 
     energy_today = await client.energy_prices(region=region)
     utc_next_hour = energy_today.utcnow() + timedelta(hours=1)
     print(f"--- ENERGY TODAY FOR REGION {region.name}---")
-    print(f"Extremas price: {energy_today.extreme_prices}")
+    print(f"Lowest price today: {energy_today.lowest_price_today}")
+    print(f"Highest price today: {energy_today.highest_price_today}")
     print(f"Average price: {energy_today.average_price}")
     print()
 
-    highest_time = energy_today.highest_price_time.astimezone(local)
+    highest_time = energy_today.highest_price_time
     print(f"Highest price time: {highest_time}")
-    lowest_time = energy_today.lowest_price_time.astimezone(local)
+    lowest_time = energy_today.lowest_price_time
     print(f"Lowest price time: {lowest_time}")
     print()
     print(f"Current price: {energy_today.current_price}")
-    print(f"Next hourprice: {energy_today.price_at_time(utc_next_hour)}")
+    print(f"Next hour price: {energy_today.price_at_time(utc_next_hour)}")
 
     lower_hours: int = energy_today.hours_priced_equal_or_lower
     print(f"Lower hours: {lower_hours}")
