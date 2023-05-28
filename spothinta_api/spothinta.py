@@ -8,12 +8,18 @@ from importlib import metadata
 from typing import Any, cast
 
 import async_timeout
+from aiohttp import ClientResponseError
 from aiohttp.client import ClientError, ClientSession
 from aiohttp.hdrs import METH_GET
 from yarl import URL
 
 from .const import API_HOST, Region
-from .exceptions import SpotHintaConnectionError, SpotHintaError, SpotHintaNoDataError
+from .exceptions import (
+    SpotHintaConnectionError,
+    SpotHintaError,
+    SpotHintaNoDataError,
+    SpotHintaRateLimitError,
+)
 from .models import Electricity
 
 
@@ -46,6 +52,8 @@ class SpotHinta:
 
         Raises:
         ------
+            SpotHintaRateLimitError: If too many requests have been made
+                during a given timespan.
             SpotHintaConnectionError: An error occurred while
                 communicating with the API.
             SpotHintaError: Received an unexpected response from
@@ -78,16 +86,22 @@ class SpotHinta:
                     ssl=True,
                 )
                 response.raise_for_status()
-        except asyncio.TimeoutError as exception:
+        except asyncio.TimeoutError as ex:
             msg = "Timeout occurred while connecting to the API."
             raise SpotHintaConnectionError(
                 msg,
-            ) from exception
-        except (ClientError, socket.gaierror) as exception:
+            ) from ex
+        except (ClientError, socket.gaierror) as ex:
+            if isinstance(ex, ClientResponseError) and ex.status == 429:
+                msg = "IP address rate limited (HTTP 429)"
+                raise SpotHintaRateLimitError(
+                    msg,
+                ) from ex
+
             msg = "Error occurred while communicating with the API."
             raise SpotHintaConnectionError(
                 msg,
-            ) from exception
+            ) from ex
 
         content_type = response.headers.get("Content-Type", "")
         if "application/json" not in content_type:

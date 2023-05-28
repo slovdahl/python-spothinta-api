@@ -8,7 +8,11 @@ from aiohttp import ClientError, ClientResponse, ClientSession
 from aresponses import Response, ResponsesMockServer
 
 from spothinta_api import SpotHinta
-from spothinta_api.exceptions import SpotHintaConnectionError, SpotHintaError
+from spothinta_api.exceptions import (
+    SpotHintaConnectionError,
+    SpotHintaError,
+    SpotHintaRateLimitError,
+)
 
 from . import load_fixtures
 
@@ -46,6 +50,22 @@ async def test_internal_session(aresponses: ResponsesMockServer) -> None:
     )
     async with SpotHinta() as client:
         await client._request("/TodayAndDayForward")
+
+
+async def test_rate_limit(aresponses: ResponsesMockServer) -> None:
+    """Test rate limit response (HTTP 429) is handled correctly."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=429,
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        with pytest.raises(SpotHintaRateLimitError):
+            assert await client._request("/TodayAndDayForward")
 
 
 async def test_timeout(aresponses: ResponsesMockServer) -> None:
