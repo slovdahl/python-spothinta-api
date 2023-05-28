@@ -32,7 +32,7 @@ def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | Non
 def _get_pricetime(
     prices: dict[datetime, float],
     func: Callable[[dict[datetime, float]], datetime],
-) -> datetime:
+) -> datetime | None:
     """Return the time of the price.
 
     Args:
@@ -42,8 +42,11 @@ def _get_pricetime(
 
     Returns:
     -------
-        The time of the price.
+        The time of the price or None if prices is None or empty.
     """
+    if prices is None or len(prices) == 0:
+        return None
+
     return func(prices, key=prices.get)  # type: ignore[call-arg]
 
 
@@ -59,51 +62,72 @@ class Electricity:
 
         Returns
         -------
-            The price for the current hour.
+            The price for the current hour or None if no price is available.
         """
         return self.price_at_time(self.utcnow())
 
     @property
-    def extreme_prices(self) -> tuple[float, float]:
-        """Return the minimum and maximum price.
+    def lowest_price_today(self) -> float | None:
+        """Return the minimum price today.
 
         Returns
         -------
-            The minimum and maximum price.
+            The minimum price today or None if no prices are available for today.
         """
-        return round(min(self.prices_today().values()), 5), round(
-            max(self.prices_today().values()),
-            5,
-        )
+        prices = self.prices_today()
+
+        if len(prices) == 0:
+            return None
+
+        return round(min(prices.values()), 5)
 
     @property
-    def average_price(self) -> float:
-        """Return the average price.
+    def highest_price_today(self) -> float | None:
+        """Return the maximum price today.
 
         Returns
         -------
-            The average price.
+            The maximum price today or None if no prices are available for today.
+        """
+        prices = self.prices_today()
+
+        if len(prices) == 0:
+            return None
+
+        return round(max(prices.values()), 5)
+
+    @property
+    def average_price(self) -> float | None:
+        """Return the average price today.
+
+        Returns
+        -------
+            The average price today or None if no prices are available for today.
         """
         prices_today = self.prices_today()
+
+        if len(prices_today) == 0:
+            return None
+
         return round(sum(prices_today.values()) / len(prices_today), 5)
 
     @property
-    def highest_price_time(self) -> datetime:
+    def highest_price_time(self) -> datetime | None:
         """Return the time of the highest price.
 
         Returns
         -------
-            The time of the highest price.
+            The time of the highest price or None if no prices are available for today.
         """
         return _get_pricetime(self.prices_today(), max)
 
     @property
-    def lowest_price_time(self) -> datetime:
+    def lowest_price_time(self) -> datetime | None:
         """Return the time of the lowest price.
 
         Returns
         -------
-            The time of the lowest price.
+            The time of the lowest price or None if no prices are available for today.
         """
         return _get_pricetime(self.prices_today(), min)
 
