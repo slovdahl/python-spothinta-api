@@ -29,8 +29,11 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
         assert energy is not None
         assert isinstance(energy, Electricity)
         assert energy.highest_price_today == 0.1055
+        assert energy.highest_price_tomorrow == 0.0972
         assert energy.lowest_price_today == 0.062
+        assert energy.lowest_price_tomorrow == 0.0373
         assert energy.average_price_today == 0.08935
+        assert energy.average_price_tomorrow == 0.07284
         assert energy.current_price == 0.062
         assert energy.hours_priced_equal_or_lower == 1
         # The price for another hour
@@ -40,13 +43,63 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
             "2023-05-06 15:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
         )
+        assert energy.lowest_price_time_tomorrow == datetime.strptime(
+            "2023-05-07 16:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
         assert energy.highest_price_time_today == datetime.strptime(
             "2023-05-06 20:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
         )
+        assert energy.highest_price_time_tomorrow == datetime.strptime(
+            "2023-05-07 08:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert isinstance(energy.timestamp_prices, list)
+
+
+@pytest.mark.freeze_time("2023-05-06 15:00:00+03:00")
+async def test_model_no_prices_for_tomorrow(aresponses: ResponsesMockServer) -> None:
+    """Test the model for usage at 15:00:00 UTC+3 with no prices for tomorrow."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy-no-tomorrow.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices()
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        assert energy.highest_price_today == 0.1055
+        assert energy.highest_price_tomorrow is None
+        assert energy.lowest_price_today == 0.062
+        assert energy.lowest_price_tomorrow is None
+        assert energy.average_price_today == 0.08935
+        assert energy.average_price_tomorrow is None
+        assert energy.current_price == 0.062
+        assert energy.hours_priced_equal_or_lower == 1
+        # The price for another hour
+        another_hour = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_hour) == 0.1055
+        assert energy.lowest_price_time_today == datetime.strptime(
+            "2023-05-06 15:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.lowest_price_time_tomorrow is None
+        assert energy.highest_price_time_today == datetime.strptime(
+            "2023-05-06 20:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.highest_price_time_tomorrow is None
         assert isinstance(energy.timestamp_prices, list)
         assert isinstance(energy.timestamp_prices_today, list)
-        assert len(energy.timestamp_prices) == 48
+        assert len(energy.timestamp_prices) == 24
         assert len(energy.timestamp_prices_today) == 24
 
 
