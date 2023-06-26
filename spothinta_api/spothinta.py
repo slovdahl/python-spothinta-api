@@ -13,7 +13,7 @@ from aiohttp.client import ClientError, ClientSession
 from aiohttp.hdrs import METH_GET
 from yarl import URL
 
-from .const import API_HOST, Region
+from .const import API_HOST, REGION_TO_TIMEZONE, Region
 from .exceptions import (
     SpotHintaConnectionError,
     SpotHintaError,
@@ -137,7 +137,9 @@ class SpotHinta:
         if len(data) == 0:
             msg = "No energy prices found."
             raise SpotHintaNoDataError(msg)
-        return Electricity.from_dict(data)
+
+        time_zone = REGION_TO_TIMEZONE[region]
+        return Electricity.from_dict(data, time_zone=time_zone)
 
     async def close(self) -> None:
         """Close open client session."""
