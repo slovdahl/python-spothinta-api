@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from zoneinfo import ZoneInfo
 
 
 def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | None:
@@ -55,6 +56,7 @@ class Electricity:
     """Object representing electricity data."""
 
     prices: dict[datetime, float]
+    time_zone: ZoneInfo
 
     @property
     def current_price(self) -> float | None:
@@ -170,7 +172,7 @@ class Electricity:
             The prices for today.
         """
         prices_today = {}
-        today = datetime.utcnow().astimezone().date()  # noqa: DTZ003
+        today = datetime.now(tz=self.time_zone).astimezone().date()
         for timestamp, price in self.prices.items():
             if timestamp.date() == today:
                 prices_today[timestamp] = price
@@ -224,12 +226,17 @@ class Electricity:
         return None
 
     @classmethod
-    def from_dict(cls: type[Electricity], data: list[dict[str, Any]]) -> Electricity:
+    def from_dict(
+        cls: type[Electricity],
+        data: list[dict[str, Any]],
+        time_zone: ZoneInfo,
+    ) -> Electricity:
         """Create an Electricity object from a dictionary.
 
         Args:
         ----
             data: A dictionary with the data from the API.
+            time_zone: The timezone to use for determining "today" and "tomorrow".
 
         Returns:
         -------
@@ -242,4 +249,5 @@ class Electricity:
             ]
         return cls(
             prices=prices,
+            time_zone=time_zone,
         )
