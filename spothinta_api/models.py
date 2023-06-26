@@ -133,11 +133,21 @@ class Electricity:
 
     @property
     def timestamp_prices(self) -> list[dict[str, float | datetime]]:
-        """Return a dictionary with the prices.
+        """Return a dictionary with all known prices.
 
         Returns
         -------
-            A dictionary with the prices.
+            A dictionary with the prices for all known prices.
+        """
+        return self.generate_timestamp_list(self.prices)
+
+    @property
+    def timestamp_prices_today(self) -> list[dict[str, float | datetime]]:
+        """Return a dictionary with the prices for today.
+
+        Returns
+        -------
+            A dictionary with the prices for today.
         """
         return self.generate_timestamp_list(self.prices_today())
 
