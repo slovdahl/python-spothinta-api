@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -66,7 +66,7 @@ class Electricity:
         -------
             The price for the current hour or None if no price is available.
         """
-        return self.price_at_time(self.utcnow())
+        return self.price_at_time(self.now_in_timezone())
 
     @property
     def lowest_price_today(self) -> float | None:
@@ -172,20 +172,20 @@ class Electricity:
             The prices for today.
         """
         prices_today = {}
-        today = datetime.now(tz=self.time_zone).astimezone().date()
+        today = self.now_in_timezone().astimezone().date()
         for timestamp, price in self.prices.items():
             if timestamp.date() == today:
                 prices_today[timestamp] = price
         return prices_today
 
-    def utcnow(self) -> datetime:
-        """Return the current timestamp in the UTC timezone.
+    def now_in_timezone(self) -> datetime:
+        """Return the current timestamp in the current timezone.
 
         Returns
         -------
-            The current timestamp in the UTC timezone.
+            The current timestamp in the current timezone.
         """
-        return datetime.now(timezone.utc)
+        return datetime.now(tz=self.time_zone)
 
     def generate_timestamp_list(
         self,

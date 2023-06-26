@@ -17,7 +17,7 @@ async def main() -> None:
 async def print_prices(client: SpotHinta, region: Region) -> None:
     """Print prices for the given region."""
     energy_today = await client.energy_prices(region=region)
-    utc_next_hour = energy_today.utcnow() + timedelta(hours=1)
+    utc_next_hour = energy_today.now_in_timezone() + timedelta(hours=1)
     print(f"--- ENERGY TODAY FOR REGION {region.name}---")
     print(f"Lowest price today: {energy_today.lowest_price_today}")
     print(f"Highest price today: {energy_today.highest_price_today}")
