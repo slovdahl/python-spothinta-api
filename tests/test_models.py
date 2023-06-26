@@ -30,17 +30,17 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
         assert isinstance(energy, Electricity)
         assert energy.highest_price_today == 0.1055
         assert energy.lowest_price_today == 0.062
-        assert energy.average_price == 0.08935
+        assert energy.average_price_today == 0.08935
         assert energy.current_price == 0.062
         assert energy.hours_priced_equal_or_lower == 1
         # The price for another hour
         another_hour = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
         assert energy.price_at_time(another_hour) == 0.1055
-        assert energy.lowest_price_time == datetime.strptime(
+        assert energy.lowest_price_time_today == datetime.strptime(
             "2023-05-06 15:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
         )
-        assert energy.highest_price_time == datetime.strptime(
+        assert energy.highest_price_time_today == datetime.strptime(
             "2023-05-06 20:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
         )
@@ -106,15 +106,15 @@ async def test_only_data_for_tomorrow(aresponses: ResponsesMockServer) -> None:
         assert energy is not None
         assert isinstance(energy, Electricity)
         assert energy.current_price is None
-        assert energy.average_price is None
+        assert energy.average_price_today is None
         assert energy.highest_price_today is None
         assert energy.lowest_price_today is None
         assert energy.hours_priced_equal_or_lower == 0
         # The price for another hour
         another_hour = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
         assert energy.price_at_time(another_hour) is None
-        assert energy.lowest_price_time is None
-        assert energy.highest_price_time is None
+        assert energy.lowest_price_time_today is None
+        assert energy.highest_price_time_today is None
         assert isinstance(energy.timestamp_prices, list)
 
 

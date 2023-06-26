@@ -21,12 +21,12 @@ async def print_prices(client: SpotHinta, region: Region) -> None:
     print(f"--- ENERGY TODAY FOR REGION {region.name}---")
     print(f"Lowest price today: {energy_today.lowest_price_today}")
     print(f"Highest price today: {energy_today.highest_price_today}")
-    print(f"Average price: {energy_today.average_price}")
+    print(f"Average price: {energy_today.average_price_today}")
     print()
 
-    highest_time = energy_today.highest_price_time
+    highest_time = energy_today.highest_price_time_today
     print(f"Highest price time: {highest_time}")
-    lowest_time = energy_today.lowest_price_time
+    lowest_time = energy_today.lowest_price_time_today
     print(f"Lowest price time: {lowest_time}")
     print()
     print(f"Current price: {energy_today.current_price}")
