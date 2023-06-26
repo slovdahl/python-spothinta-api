@@ -97,7 +97,7 @@ class Electricity:
         return round(max(prices.values()), 5)
 
     @property
-    def average_price(self) -> float | None:
+    def average_price_today(self) -> float | None:
         """Return the average price today.
 
         Returns
@@ -112,8 +112,8 @@ class Electricity:
         return round(sum(prices_today.values()) / len(prices_today), 5)
 
     @property
-    def highest_price_time(self) -> datetime | None:
-        """Return the time of the highest price.
+    def highest_price_time_today(self) -> datetime | None:
+        """Return the time of the highest price today.
 
         Returns
         -------
@@ -122,8 +122,8 @@ class Electricity:
         return _get_pricetime(self.prices_today(), max)
 
     @property
-    def lowest_price_time(self) -> datetime | None:
-        """Return the time of the lowest price.
+    def lowest_price_time_today(self) -> datetime | None:
+        """Return the time of the lowest price today.
 
         Returns
         -------
