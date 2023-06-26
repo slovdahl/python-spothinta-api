@@ -84,6 +84,21 @@ class Electricity:
         return round(min(prices.values()), 5)
 
     @property
+    def lowest_price_tomorrow(self) -> float | None:
+        """Return the minimum price tomorrow.
+
+        Returns
+        -------
+            The minimum price tomorrow or None if no prices are available for tomorrow.
+        """
+        prices = self.prices_tomorrow()
+
+        if len(prices) == 0:
+            return None
+
+        return round(min(prices.values()), 5)
+
+    @property
     def highest_price_today(self) -> float | None:
         """Return the maximum price today.
 
@@ -92,6 +107,21 @@ class Electricity:
             The maximum price today or None if no prices are available for today.
         """
         prices = self.prices_today()
+
+        if len(prices) == 0:
+            return None
+
+        return round(max(prices.values()), 5)
+
+    @property
+    def highest_price_tomorrow(self) -> float | None:
+        """Return the maximum price tomorrow.
+
+        Returns
+        -------
+            The maximum price tomorrow or None if no prices are available for tomorrow.
+        """
+        prices = self.prices_tomorrow()
 
         if len(prices) == 0:
             return None
@@ -114,6 +144,21 @@ class Electricity:
         return round(sum(prices_today.values()) / len(prices_today), 5)
 
     @property
+    def average_price_tomorrow(self) -> float | None:
+        """Return the average price tomorrow.
+
+        Returns
+        -------
+            The average price tomorrow or None if no prices are available for tomorrow.
+        """
+        prices_tomorrow = self.prices_tomorrow()
+
+        if len(prices_tomorrow) == 0:
+            return None
+
+        return round(sum(prices_tomorrow.values()) / len(prices_tomorrow), 5)
+
+    @property
     def highest_price_time_today(self) -> datetime | None:
         """Return the time of the highest price today.
 
@@ -124,6 +169,17 @@ class Electricity:
         return _get_pricetime(self.prices_today(), max)
 
     @property
+    def highest_price_time_tomorrow(self) -> datetime | None:
+        """Return the time of the highest price tomorrow.
+
+        Returns
+        -------
+            The time of the highest price or None if no prices are available for
+            tomorrow.
+        """
+        return _get_pricetime(self.prices_tomorrow(), max)
+
+    @property
     def lowest_price_time_today(self) -> datetime | None:
         """Return the time of the lowest price today.
 
@@ -132,6 +188,17 @@ class Electricity:
             The time of the lowest price or None if no prices are available for today.
         """
         return _get_pricetime(self.prices_today(), min)
+
+    @property
+    def lowest_price_time_tomorrow(self) -> datetime | None:
+        """Return the time of the lowest price tomorrow.
+
+        Returns
+        -------
+            The time of the lowest price or None if no prices are available for
+            tomorrow.
+        """
+        return _get_pricetime(self.prices_tomorrow(), min)
 
     @property
     def timestamp_prices(self) -> list[dict[str, float | datetime]]:
@@ -178,6 +245,21 @@ class Electricity:
                 prices_today[timestamp] = price
         return prices_today
 
+    def prices_tomorrow(self) -> dict[datetime, float]:
+        """Return the prices for tomorrow.
+
+        Returns
+        -------
+            The prices for tomorrow.
+        """
+        prices_tomorrow = {}
+        tomorrow = (self.now_in_timezone() + timedelta(days=1)).astimezone().date()
+
+        for timestamp, price in self.prices.items():
+            if timestamp.date() == tomorrow:
+                prices_tomorrow[timestamp] = price
+        return prices_tomorrow
+
     def now_in_timezone(self) -> datetime:
         """Return the current timestamp in the current timezone.
 
@@ -212,14 +294,11 @@ class Electricity:
         Args:
         ----
             moment: The time to get the price for.
-            data_type: The type of data to get the price for.
-                Can be "usage" (default) or "return".
 
         Returns:
         -------
             The price at the specified time.
         """
-        # Get the price at the specified time
         value = _timed_value(moment, self.prices)
         if value is not None or value == 0:
             return value
