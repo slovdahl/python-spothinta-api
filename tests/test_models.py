@@ -45,6 +45,9 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
             "%Y-%m-%d %H:%M:%S%z",
         )
         assert isinstance(energy.timestamp_prices, list)
+        assert isinstance(energy.timestamp_prices_today, list)
+        assert len(energy.timestamp_prices) == 48
+        assert len(energy.timestamp_prices_today) == 24
 
 
 @pytest.mark.freeze_time("2023-05-06 15:00:00+03:00")
@@ -116,6 +119,9 @@ async def test_only_data_for_tomorrow(aresponses: ResponsesMockServer) -> None:
         assert energy.lowest_price_time_today is None
         assert energy.highest_price_time_today is None
         assert isinstance(energy.timestamp_prices, list)
+        assert isinstance(energy.timestamp_prices_today, list)
+        assert len(energy.timestamp_prices) == 24
+        assert len(energy.timestamp_prices_today) == 0
 
 
 async def test_no_electricity_data(aresponses: ResponsesMockServer) -> None:
