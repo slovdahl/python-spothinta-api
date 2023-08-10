@@ -1,6 +1,9 @@
 """Constants for SpotHinta API client."""
+from __future__ import annotations
+
 from enum import Enum, unique
 from typing import Final
+
 from zoneinfo import ZoneInfo
 
 API_HOST: Final = "api.spot-hinta.fi"
