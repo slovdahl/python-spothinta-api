@@ -22,6 +22,7 @@ def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | Non
     Returns:
     -------
         The value at the specific time.
+
     """
     value = None
     for timestamp, price in prices.items():
@@ -45,6 +46,7 @@ def _get_pricetime(
     Returns:
     -------
         The time of the price or None if prices is None or empty.
+
     """
     if prices is None or len(prices) == 0:
         return None
@@ -66,6 +68,7 @@ class Electricity:
         Returns
         -------
             The price for the current hour or None if no price is available.
+
         """
         return self.price_at_time(self.now_in_timezone())
 
@@ -76,6 +79,7 @@ class Electricity:
         Returns
         -------
             The minimum price today or None if no prices are available for today.
+
         """
         prices = self.prices_today()
 
@@ -91,6 +95,7 @@ class Electricity:
         Returns
         -------
             The minimum price tomorrow or None if no prices are available for tomorrow.
+
         """
         prices = self.prices_tomorrow()
 
@@ -106,6 +111,7 @@ class Electricity:
         Returns
         -------
             The maximum price today or None if no prices are available for today.
+
         """
         prices = self.prices_today()
 
@@ -121,6 +127,7 @@ class Electricity:
         Returns
         -------
             The maximum price tomorrow or None if no prices are available for tomorrow.
+
         """
         prices = self.prices_tomorrow()
 
@@ -136,6 +143,7 @@ class Electricity:
         Returns
         -------
             The average price today or None if no prices are available for today.
+
         """
         prices_today = self.prices_today()
 
@@ -151,6 +159,7 @@ class Electricity:
         Returns
         -------
             The average price tomorrow or None if no prices are available for tomorrow.
+
         """
         prices_tomorrow = self.prices_tomorrow()
 
@@ -166,6 +175,7 @@ class Electricity:
         Returns
         -------
             The time of the highest price or None if no prices are available for today.
+
         """
         return _get_pricetime(self.prices_today(), max)
 
@@ -177,6 +187,7 @@ class Electricity:
         -------
             The time of the highest price or None if no prices are available for
             tomorrow.
+
         """
         return _get_pricetime(self.prices_tomorrow(), max)
 
@@ -187,6 +198,7 @@ class Electricity:
         Returns
         -------
             The time of the lowest price or None if no prices are available for today.
+
         """
         return _get_pricetime(self.prices_today(), min)
 
@@ -198,6 +210,7 @@ class Electricity:
         -------
             The time of the lowest price or None if no prices are available for
             tomorrow.
+
         """
         return _get_pricetime(self.prices_tomorrow(), min)
 
@@ -208,6 +221,7 @@ class Electricity:
         Returns
         -------
             A dictionary with the prices for all known prices.
+
         """
         return self.generate_timestamp_list(self.prices)
 
@@ -218,6 +232,7 @@ class Electricity:
         Returns
         -------
             A dictionary with the prices for today.
+
         """
         return self.generate_timestamp_list(self.prices_today())
 
@@ -228,6 +243,7 @@ class Electricity:
         Returns
         -------
             The number of hours with the current price or better.
+
         """
         current = self.current_price or 0
         return sum(price <= current for price in self.prices_today().values())
@@ -238,6 +254,7 @@ class Electricity:
         Returns
         -------
             The prices for today.
+
         """
         prices_today = {}
         today = self.now_in_timezone().astimezone().date()
@@ -252,6 +269,7 @@ class Electricity:
         Returns
         -------
             The prices for tomorrow.
+
         """
         prices_tomorrow = {}
         tomorrow = (self.now_in_timezone() + timedelta(days=1)).astimezone().date()
@@ -267,6 +285,7 @@ class Electricity:
         Returns
         -------
             The current timestamp in the current timezone.
+
         """
         return datetime.now(tz=self.time_zone)
 
@@ -283,6 +302,7 @@ class Electricity:
         Returns:
         -------
             A list of dictionaries with the prices and timestamps.
+
         """
         timestamp_prices: list[dict[str, float | datetime]] = []
         for timestamp, price in prices.items():
@@ -299,6 +319,7 @@ class Electricity:
         Returns:
         -------
             The price at the specified time.
+
         """
         value = _timed_value(moment, self.prices)
         if value is not None or value == 0:
@@ -321,6 +342,7 @@ class Electricity:
         Returns:
         -------
             An Electricity object.
+
         """
         prices: dict[datetime, float] = {}
         for item in data:
