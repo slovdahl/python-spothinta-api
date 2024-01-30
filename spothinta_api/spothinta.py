@@ -61,6 +61,7 @@ class SpotHinta:
                 communicating with the API.
             SpotHintaError: Received an unexpected response from
                 the API.
+
         """
         version = metadata.version(__package__)
 
@@ -131,6 +132,7 @@ class SpotHinta:
         Raises:
         ------
             SpotHintaNoDataError: No energy prices found.
+
         """
         data = await self._request(
             uri="/TodayAndDayForward",
@@ -155,6 +157,7 @@ class SpotHinta:
         Returns
         -------
             The SpotHinta object.
+
         """
         return self
 
@@ -164,5 +167,6 @@ class SpotHinta:
         Args:
         ----
             _exc_info: Exec type.
+
         """
         await self.close()
