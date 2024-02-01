@@ -28,7 +28,7 @@ example = "examples.energy:start"
 [tool.poetry.dependencies]
 aiohttp = ">=3.0.0"
 async-timeout = "^4.0.3"
-python = "^3.9"
+python = "^3.10"
 yarl = ">=1.6.0"
 
 [tool.poetry.group.dev.dependencies]
