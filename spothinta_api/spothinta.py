@@ -27,6 +27,8 @@ from .models import Electricity
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+VERSION = metadata.version(__package__)
+
 
 @dataclass
 class SpotHinta:
@@ -65,8 +67,6 @@ class SpotHinta:
                 the API.
 
         """
-        version = metadata.version(__package__)
-
         url = URL.build(
             scheme="https",
             host=API_HOST,
@@ -75,7 +75,7 @@ class SpotHinta:
 
         headers = {
             "Accept": "application/json",
-            "User-Agent": f"PythonSpotHinta/{version}",
+            "User-Agent": f"PythonSpotHinta/{VERSION}",
         }
 
         if self.session is None:
