@@ -1,4 +1,5 @@
 """Data models for the spot-hinta.fi API."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

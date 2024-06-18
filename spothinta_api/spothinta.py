@@ -1,4 +1,5 @@
 """Asynchronous Python client for the spot-hinta.fi API."""
+
 from __future__ import annotations
 
 import asyncio
@@ -11,6 +12,7 @@ import async_timeout
 from aiohttp import ClientResponseError
 from aiohttp.client import ClientError, ClientSession
 from aiohttp.hdrs import METH_GET
+from aiozoneinfo import async_get_time_zone
 from yarl import URL
 
 from .const import API_HOST, REGION_TO_TIMEZONE, Region
@@ -143,7 +145,7 @@ class SpotHinta:
             msg = "No energy prices found."
             raise SpotHintaNoDataError(msg)
 
-        time_zone = REGION_TO_TIMEZONE[region]
+        time_zone = await async_get_time_zone(REGION_TO_TIMEZONE[region])
         return Electricity.from_dict(data, time_zone=time_zone)
 
     async def close(self) -> None:
