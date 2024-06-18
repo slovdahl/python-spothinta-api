@@ -1,10 +1,9 @@
 """Constants for SpotHinta API client."""
+
 from __future__ import annotations
 
 from enum import Enum, unique
 from typing import Final
-
-from zoneinfo import ZoneInfo
 
 API_HOST: Final = "api.spot-hinta.fi"
 
@@ -30,20 +29,20 @@ class Region(Enum):
     SE4 = 14
 
 
-REGION_TO_TIMEZONE: dict[Region, ZoneInfo] = {
-    Region.DK1: ZoneInfo("Europe/Copenhagen"),
-    Region.DK2: ZoneInfo("Europe/Copenhagen"),
-    Region.FI: ZoneInfo("Europe/Helsinki"),
-    Region.EE: ZoneInfo("Europe/Tallinn"),
-    Region.LT: ZoneInfo("Europe/Vilnius"),
-    Region.LV: ZoneInfo("Europe/Riga"),
-    Region.NO1: ZoneInfo("Europe/Oslo"),
-    Region.NO2: ZoneInfo("Europe/Oslo"),
-    Region.NO3: ZoneInfo("Europe/Oslo"),
-    Region.NO4: ZoneInfo("Europe/Oslo"),
-    Region.NO5: ZoneInfo("Europe/Oslo"),
-    Region.SE1: ZoneInfo("Europe/Stockholm"),
-    Region.SE2: ZoneInfo("Europe/Stockholm"),
-    Region.SE3: ZoneInfo("Europe/Stockholm"),
-    Region.SE4: ZoneInfo("Europe/Stockholm"),
+REGION_TO_TIMEZONE: dict[Region, str] = {
+    Region.DK1: "Europe/Copenhagen",
+    Region.DK2: "Europe/Copenhagen",
+    Region.FI: "Europe/Helsinki",
+    Region.EE: "Europe/Tallinn",
+    Region.LT: "Europe/Vilnius",
+    Region.LV: "Europe/Riga",
+    Region.NO1: "Europe/Oslo",
+    Region.NO2: "Europe/Oslo",
+    Region.NO3: "Europe/Oslo",
+    Region.NO4: "Europe/Oslo",
+    Region.NO5: "Europe/Oslo",
+    Region.SE1: "Europe/Stockholm",
+    Region.SE2: "Europe/Stockholm",
+    Region.SE3: "Europe/Stockholm",
+    Region.SE4: "Europe/Stockholm",
 }
