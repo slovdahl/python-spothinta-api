@@ -33,7 +33,7 @@ python = "^3.10"
 yarl = ">=1.6.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = ">=0.0.243,<0.4.11"
+ruff = ">=0.5.0,<0.5.1"
 aresponses = ">=2.1.6,<4.0.0"
 black = ">=22.12,<25.0"
 blacken-docs = "^1.13.0"
@@ -136,7 +136,7 @@ max-line-length=88
 addopts = "--cov"
 asyncio_mode = "auto"
 
-[tool.ruff]
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
   "ANN101", # Self... explanatory
@@ -147,14 +147,14 @@ ignore = [
   "PLR2004", # Just annoying, not really useful
 ]
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 mark-parentheses = false
 fixture-parentheses = false
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["spothinta_api"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 25
 
 [build-system]

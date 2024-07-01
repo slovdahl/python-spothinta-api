@@ -257,12 +257,12 @@ class Electricity:
             The prices for today.
 
         """
-        prices_today = {}
         today = self.now_in_timezone().astimezone().date()
-        for timestamp, price in self.prices.items():
-            if timestamp.date() == today:
-                prices_today[timestamp] = price
-        return prices_today
+        return {
+            timestamp: price
+            for timestamp, price in self.prices.items()
+            if timestamp.date() == today
+        }
 
     def prices_tomorrow(self) -> dict[datetime, float]:
         """Return the prices for tomorrow.
@@ -272,13 +272,12 @@ class Electricity:
             The prices for tomorrow.
 
         """
-        prices_tomorrow = {}
         tomorrow = (self.now_in_timezone() + timedelta(days=1)).astimezone().date()
-
-        for timestamp, price in self.prices.items():
-            if timestamp.date() == tomorrow:
-                prices_tomorrow[timestamp] = price
-        return prices_tomorrow
+        return {
+            timestamp: price
+            for timestamp, price in self.prices.items()
+            if timestamp.date() == tomorrow
+        }
 
     def now_in_timezone(self) -> datetime:
         """Return the current timestamp in the current timezone.
