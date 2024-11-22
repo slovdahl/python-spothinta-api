@@ -22,7 +22,7 @@ pip install spothinta-api
 
 ## Data
 
-This client currently supports getting today's and tomorrow's  hourly energy prices. The prices for tomorrow are usually published between 14:00 and 15:00. See [spot-hinta.fi API documentation][spothinta-api-docs] for more information about the available data.
+This client currently supports getting today's and tomorrow's hourly energy prices. The prices for tomorrow are usually published between 14:00 and 15:00. See [spot-hinta.fi API documentation][spothinta-api-docs] for more information about the available data.
 
 ## Example
 
@@ -103,7 +103,8 @@ poetry run pytest
 
 MIT License
 
-Copyright (c) 2022-2023 Sebastian Lövdahl, Klaas Schoute
+Copyright (c) 2022-2024 Sebastian Lövdahl
+Copyright (c) 2022-2023 Klaas Schoute
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -137,8 +138,8 @@ SOFTWARE.
 [codecov-url]: https://codecov.io/gh/slovdahl/python-spothinta
 [maintainability-shield]: https://api.codeclimate.com/v1/badges/8628757a4bde52dbfaf6/maintainability
 [maintainability-url]: https://codeclimate.com/github/slovdahl/python-spothinta/maintainability
-[pypi]: https://pypi.org/project/easyenergy/
-[python-versions-shield]: https://img.shields.io/pypi/pyversions/easyenergy
+[pypi]: https://pypi.org/project/spothinta-api/
+[python-versions-shield]: https://img.shields.io/pypi/pyversions/spothinta-api
 [typing-shield]: https://github.com/slovdahl/python-spothinta/actions/workflows/typing.yaml/badge.svg
 [typing-url]: https://github.com/slovdahl/python-spothinta/actions/workflows/typing.yaml
 [releases-shield]: https://img.shields.io/github/release/slovdahl/python-spothinta.svg
