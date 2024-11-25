@@ -29,7 +29,7 @@ example = "examples.energy:start"
 [tool.poetry.dependencies]
 aiohttp = ">=3.0.0"
 aiozoneinfo = "0.*"
-async-timeout = "^4.0.3"
+async-timeout = ">=4.0.3,<6.0.0"
 python = "^3.10"
 yarl = ">=1.6.0"
 
