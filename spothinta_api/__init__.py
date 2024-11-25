@@ -7,7 +7,7 @@ from .spothinta import SpotHinta
 __all__ = [
     "Electricity",
     "SpotHinta",
+    "SpotHintaConnectionError",
     "SpotHintaError",
     "SpotHintaNoDataError",
-    "SpotHintaConnectionError",
 ]
