@@ -52,7 +52,7 @@ safety = ">=2.3.5,<4.0.0"
 yamllint = "^1.29.0"
 pytz = ">=2022.6,<2026.0"
 covdefaults = "^2.2.2"
-types-pytz = ">=2022.7.1,<2025.0.0"
+types-pytz = ">=2022.7.1,<2026.0.0"
 
 [tool.black]
 target-version = ['py311']
