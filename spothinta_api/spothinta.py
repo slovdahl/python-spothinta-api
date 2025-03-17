@@ -118,7 +118,7 @@ class SpotHinta:
                 {"Content-Type": content_type, "response": text},
             )
 
-        return cast(dict[str, Any], await response.json())
+        return cast("dict[str, Any]", await response.json())
 
     async def energy_prices(self, region: Region = Region.FI) -> Electricity:
         """Get energy prices for today and tomorrow for a region.
