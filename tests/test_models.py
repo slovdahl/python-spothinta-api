@@ -1,4 +1,5 @@
 """Test the models."""
+
 from datetime import datetime, timezone
 
 import pytest
@@ -15,7 +16,7 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
     """Test the model for usage at 15:00:00 UTC+3."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -63,7 +64,7 @@ async def test_model_no_prices_for_tomorrow(aresponses: ResponsesMockServer) -> 
     """Test the model for usage at 15:00:00 UTC+3 with no prices for tomorrow."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -108,7 +109,7 @@ async def test_midnight(aresponses: ResponsesMockServer) -> None:
     """Test the model between 00:00 and 01:00 in UTC+3."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -127,7 +128,7 @@ async def test_none_data(aresponses: ResponsesMockServer) -> None:
     """Test when there is no data for the current datetime."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -148,7 +149,7 @@ async def test_only_data_for_tomorrow(aresponses: ResponsesMockServer) -> None:
     """Test when there is only data for tomorrow."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -181,7 +182,7 @@ async def test_no_electricity_data(aresponses: ResponsesMockServer) -> None:
     """Test when there is no electricity data."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
