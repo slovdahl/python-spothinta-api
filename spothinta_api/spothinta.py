@@ -137,7 +137,7 @@ class SpotHinta:
 
         """
         data = await self._request(
-            uri="/TodayAndDayForward",
+            uri="/TodayAndDayForward?priceResolution=60",
             params={"region": region.name},
         )
 
