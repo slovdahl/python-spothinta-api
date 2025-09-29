@@ -1,4 +1,5 @@
 """Basic tests for the spot-hinta.fi API."""
+
 # pylint: disable=protected-access
 import asyncio
 from unittest.mock import patch
@@ -21,7 +22,7 @@ async def test_json_request(aresponses: ResponsesMockServer) -> None:
     """Test JSON response is handled correctly."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -31,7 +32,7 @@ async def test_json_request(aresponses: ResponsesMockServer) -> None:
     )
     async with ClientSession() as session:
         client = SpotHinta(session=session)
-        response = await client._request("/TodayAndDayForward")
+        response = await client._request("/TodayAndDayForward?priceResolution=60")
         assert response is not None
         await client.close()
 
@@ -40,7 +41,7 @@ async def test_internal_session(aresponses: ResponsesMockServer) -> None:
     """Test internal session is handled correctly."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -49,14 +50,14 @@ async def test_internal_session(aresponses: ResponsesMockServer) -> None:
         ),
     )
     async with SpotHinta() as client:
-        await client._request("/TodayAndDayForward")
+        await client._request("/TodayAndDayForward?priceResolution=60")
 
 
 async def test_rate_limit(aresponses: ResponsesMockServer) -> None:
     """Test rate limit response (HTTP 429) is handled correctly."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=429,
@@ -65,7 +66,7 @@ async def test_rate_limit(aresponses: ResponsesMockServer) -> None:
     async with ClientSession() as session:
         client = SpotHinta(session=session)
         with pytest.raises(SpotHintaRateLimitError):
-            assert await client._request("/TodayAndDayForward")
+            assert await client._request("/TodayAndDayForward?priceResolution=60")
 
 
 async def test_timeout(aresponses: ResponsesMockServer) -> None:
@@ -76,19 +77,24 @@ async def test_timeout(aresponses: ResponsesMockServer) -> None:
         await asyncio.sleep(0.2)
         return aresponses.Response(body="Goodmorning!")
 
-    aresponses.add("api.spot-hinta.fi", "/TodayAndDayForward", "GET", response_handler)
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward?priceResolution=60",
+        "GET",
+        response_handler,
+    )
 
     async with ClientSession() as session:
         client = SpotHinta(session=session, request_timeout=0.1)
         with pytest.raises(SpotHintaConnectionError):
-            assert await client._request("/TodayAndDayForward")
+            assert await client._request("/TodayAndDayForward?priceResolution=60")
 
 
 async def test_content_type(aresponses: ResponsesMockServer) -> None:
     """Test request content type error is handled correctly."""
     aresponses.add(
         "api.spot-hinta.fi",
-        "/TodayAndDayForward",
+        "/TodayAndDayForward?priceResolution=60",
         "GET",
         aresponses.Response(
             status=200,
@@ -101,16 +107,19 @@ async def test_content_type(aresponses: ResponsesMockServer) -> None:
             session=session,
         )
         with pytest.raises(SpotHintaError):
-            assert await client._request("/TodayAndDayForward")
+            assert await client._request("/TodayAndDayForward?priceResolution=60")
 
 
 async def test_client_error() -> None:
     """Test request client error is handled correctly."""
     async with ClientSession() as session:
         client = SpotHinta(session=session)
-        with patch.object(
-            session,
-            "request",
-            side_effect=ClientError,
-        ), pytest.raises(SpotHintaConnectionError):
-            assert await client._request("/TodayAndDayForward")
+        with (
+            patch.object(
+                session,
+                "request",
+                side_effect=ClientError,
+            ),
+            pytest.raises(SpotHintaConnectionError),
+        ):
+            assert await client._request("/TodayAndDayForward?priceResolution=60")
