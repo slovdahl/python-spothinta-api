@@ -147,7 +147,7 @@ class SpotHinta:
         """
         if resolution != timedelta(minutes=60) and resolution != timedelta(minutes=15):
             raise IllegalArgumentError(
-                "Only 15 and 60 minutes resolution is supported."
+                "Only 15 and 60 minutes resolution is supported.",
             )
 
         data = await self._request(
