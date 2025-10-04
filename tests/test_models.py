@@ -12,6 +12,7 @@ from spothinta_api import (
     SpotHintaNoDataError,
     SpotHintaUnsupportedResolutionError,
 )
+from spothinta_api.const import Region
 
 from . import load_fixtures
 
@@ -109,6 +110,57 @@ async def test_model_15_minute_resolution(aresponses: ResponsesMockServer) -> No
         )
         assert energy.highest_price_time_tomorrow == datetime.strptime(
             "2025-10-05 20:45:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert isinstance(energy.timestamp_prices, list)
+
+
+@pytest.mark.freeze_time("2025-10-04 16:00:00+02:00")
+async def test_model_se1_15_minute_resolution(aresponses: ResponsesMockServer) -> None:
+    """Test the model for usage in region SE1 at 16:00:00 UTC+3."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy-SE1-15-min.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices(
+            region=Region.SE1,
+            resolution=timedelta(minutes=15),
+        )
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        assert energy.highest_price_today == 0.00289
+        assert energy.highest_price_tomorrow == 0.0059
+        assert energy.lowest_price_today == 0.00001
+        assert energy.lowest_price_tomorrow == 0.00005
+        assert energy.average_price_today == 0.00113
+        assert energy.average_price_tomorrow == 0.00249
+        assert energy.current_price == 0.00128
+        assert energy.hours_priced_equal_or_lower == 57
+        # The price for another hour
+        another_hour = datetime(2025, 10, 4, 18, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_hour) == 0.00242
+        assert energy.lowest_price_time_today == datetime.strptime(
+            "2025-10-04 03:00:00+00:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.lowest_price_time_tomorrow == datetime.strptime(
+            "2025-10-05 01:15:00+00:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.highest_price_time_today == datetime.strptime(
+            "2025-10-04 17:30:00+00:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.highest_price_time_tomorrow == datetime.strptime(
+            "2025-10-05 17:45:00+00:00",
             "%Y-%m-%d %H:%M:%S%z",
         )
         assert isinstance(energy.timestamp_prices, list)
