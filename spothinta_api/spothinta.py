@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import socket
 from dataclasses import dataclass
+from datetime import timedelta
 from importlib import metadata
 from typing import TYPE_CHECKING, Any, cast
 
@@ -120,12 +121,16 @@ class SpotHinta:
 
         return cast("dict[str, Any]", await response.json())
 
-    async def energy_prices(self, region: Region = Region.FI) -> Electricity:
+    async def energy_prices(
+        self, region: Region = Region.FI, resolution: timedelta = timedelta(minutes=60),
+    ) -> Electricity:
         """Get energy prices for today and tomorrow for a region.
 
         Args:
         ----
             region: The region to get prices for.
+            resolution: The price resolution, default is 60 minutes. Supported
+                options are 15 and 60 minutes.
 
         Returns:
         -------
@@ -133,12 +138,19 @@ class SpotHinta:
 
         Raises:
         ------
+            ValueError: If the resolution is unsupported.
             SpotHintaNoDataError: No energy prices found.
 
         """
+        if resolution != timedelta(minutes=60) and resolution != timedelta(minutes=15):
+            raise ValueError("Only 15 and 60 minutes resolution is supported.")
+
         data = await self._request(
             uri="/TodayAndDayForward",
-            params={"region": region.name, "priceResolution": 60},
+            params={
+                "region": region.name,
+                "priceResolution": int(resolution.total_seconds() / 60),
+            },
         )
 
         if len(data) == 0:
