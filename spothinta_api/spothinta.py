@@ -146,7 +146,7 @@ class SpotHinta:
 
         """
         if resolution != timedelta(minutes=60) and resolution != timedelta(minutes=15):
-            raise SpotHintaUnsupportedResolutionError()
+            raise SpotHintaUnsupportedResolutionError
 
         data = await self._request(
             uri="/TodayAndDayForward",
