@@ -15,3 +15,7 @@ class SpotHintaRateLimitError(SpotHintaConnectionError):
 
 class SpotHintaNoDataError(SpotHintaError):
     """spot-hinta.fi - no data exception."""
+
+
+class SpotHintaUnsupportedResolutionError(ValueError):
+    """Exception for unsupported resolution."""

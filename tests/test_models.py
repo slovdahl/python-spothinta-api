@@ -1,12 +1,17 @@
 """Test the models."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from aiohttp import ClientSession
 from aresponses import ResponsesMockServer
 
-from spothinta_api import Electricity, SpotHinta, SpotHintaNoDataError
+from spothinta_api import (
+    Electricity,
+    SpotHinta,
+    SpotHintaNoDataError,
+    SpotHintaUnsupportedResolutionError,
+)
 
 from . import load_fixtures
 
@@ -54,6 +59,56 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
         )
         assert energy.highest_price_time_tomorrow == datetime.strptime(
             "2023-05-07 08:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert isinstance(energy.timestamp_prices, list)
+
+
+@pytest.mark.freeze_time("2025-10-04 15:00:00+03:00")
+async def test_model_15_minute_resolution(aresponses: ResponsesMockServer) -> None:
+    """Test the model for usage at 15:00:00 UTC+3."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy-15-min.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices(
+            resolution=timedelta(minutes=15),
+        )
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        assert energy.highest_price_today == 0.00371
+        assert energy.highest_price_tomorrow == 0.00733
+        assert energy.lowest_price_today == -0.00001
+        assert energy.lowest_price_tomorrow == -0.00004
+        assert energy.average_price_today == 0.00131
+        assert energy.average_price_tomorrow == 0.00239
+        assert energy.current_price == 0.00157
+        assert energy.hours_priced_equal_or_lower == 63
+        # The price for another hour
+        another_hour = datetime(2025, 10, 4, 17, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_hour) == 0.0033
+        assert energy.lowest_price_time_today == datetime.strptime(
+            "2025-10-04 5:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.lowest_price_time_tomorrow == datetime.strptime(
+            "2025-10-05 4:30:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.highest_price_time_today == datetime.strptime(
+            "2025-10-04 00:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.highest_price_time_tomorrow == datetime.strptime(
+            "2025-10-05 20:45:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
         )
         assert isinstance(energy.timestamp_prices, list)
@@ -194,3 +249,11 @@ async def test_no_electricity_data(aresponses: ResponsesMockServer) -> None:
         client = SpotHinta(session=session)
         with pytest.raises(SpotHintaNoDataError):
             await client.energy_prices()
+
+
+async def test_unsupported_resolution() -> None:
+    """Test an unsupported resolution."""
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        with pytest.raises(SpotHintaUnsupportedResolutionError):
+            await client.energy_prices(resolution=timedelta(minutes=45))
