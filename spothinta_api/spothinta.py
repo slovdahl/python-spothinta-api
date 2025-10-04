@@ -18,11 +18,11 @@ from yarl import URL
 
 from .const import API_HOST, REGION_TO_TIMEZONE, Region
 from .exceptions import (
-    IllegalArgumentError,
     SpotHintaConnectionError,
     SpotHintaError,
     SpotHintaNoDataError,
     SpotHintaRateLimitError,
+    SpotHintaUnsupportedResolutionError,
 )
 from .models import Electricity
 
@@ -141,14 +141,12 @@ class SpotHinta:
 
         Raises:
         ------
-            IllegalArgumentError: If the resolution is unsupported.
             SpotHintaNoDataError: No energy prices found.
+            SpotHintaUnsupportedResolutionError: If the resolution is unsupported.
 
         """
         if resolution != timedelta(minutes=60) and resolution != timedelta(minutes=15):
-            raise IllegalArgumentError(
-                "Only 15 and 60 minutes resolution is supported.",
-            )
+            raise SpotHintaUnsupportedResolutionError()
 
         data = await self._request(
             uri="/TodayAndDayForward",

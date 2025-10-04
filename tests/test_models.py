@@ -8,9 +8,9 @@ from aresponses import ResponsesMockServer
 
 from spothinta_api import (
     Electricity,
-    IllegalArgumentError,
     SpotHinta,
     SpotHintaNoDataError,
+    SpotHintaUnsupportedResolutionError,
 )
 
 from . import load_fixtures
@@ -255,5 +255,5 @@ async def test_unsupported_resolution() -> None:
     """Test an unsupported resolution."""
     async with ClientSession() as session:
         client = SpotHinta(session=session)
-        with pytest.raises(IllegalArgumentError):
+        with pytest.raises(SpotHintaUnsupportedResolutionError):
             await client.energy_prices(resolution=timedelta(minutes=45))
