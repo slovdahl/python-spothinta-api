@@ -116,7 +116,7 @@ async def test_model_15_minute_resolution(aresponses: ResponsesMockServer) -> No
 
 
 @pytest.mark.freeze_time("2025-10-04 16:00:00+02:00")
-async def test_model_SE1_15_minute_resolution(aresponses: ResponsesMockServer) -> None:
+async def test_model_se1_15_minute_resolution(aresponses: ResponsesMockServer) -> None:
     """Test the model for usage in region SE1 at 16:00:00 UTC+3."""
     aresponses.add(
         "api.spot-hinta.fi",
