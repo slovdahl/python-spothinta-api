@@ -26,7 +26,7 @@ def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | Non
     """
     value = None
     for timestamp, price in prices.items():
-        future_dt = timestamp + timedelta(hours=1)
+        future_dt = timestamp + timedelta(minutes=15)
         if timestamp <= moment < future_dt:
             value = round(price, 5)
     return value
@@ -63,11 +63,11 @@ class Electricity:
 
     @property
     def current_price(self) -> float | None:
-        """Return the price for the current hour.
+        """Return the price for the current interval.
 
         Returns
         -------
-            The price for the current hour or None if no price is available.
+            The price for the current interval or None if no price is available.
 
         """
         return self.price_at_time(self.now_in_timezone())
@@ -237,12 +237,12 @@ class Electricity:
         return self.generate_timestamp_list(self.prices_today())
 
     @property
-    def hours_priced_equal_or_lower(self) -> int:
-        """Return the number of hours with the current price or better.
+    def intervals_priced_equal_or_lower(self) -> int:
+        """Return the number of intervals with the current price or better.
 
         Returns
         -------
-            The number of hours with the current price or better.
+            The number of intervals with the current price or better.
 
         """
         current = self.current_price or 0

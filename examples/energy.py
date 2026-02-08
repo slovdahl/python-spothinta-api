@@ -32,7 +32,7 @@ async def print_prices(client: SpotHinta, region: Region) -> None:
     print(f"Current price: {energy_today.current_price}")
     print(f"Next hour price: {energy_today.price_at_time(utc_next_hour)}")
 
-    lower_hours: int = energy_today.hours_priced_equal_or_lower
+    lower_hours: int = energy_today.intervals_priced_equal_or_lower
     print(f"Lower hours: {lower_hours}")
 
 

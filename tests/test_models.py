@@ -42,10 +42,10 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
         assert energy.average_price_today == 0.08935
         assert energy.average_price_tomorrow == 0.07284
         assert energy.current_price == 0.062
-        assert energy.hours_priced_equal_or_lower == 1
-        # The price for another hour
-        another_hour = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
-        assert energy.price_at_time(another_hour) == 0.1055
+        assert energy.intervals_priced_equal_or_lower == 1
+        # The price for another interval
+        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) == 0.1055
         assert energy.lowest_price_time_today == datetime.strptime(
             "2023-05-06 15:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
@@ -92,10 +92,10 @@ async def test_model_15_minute_resolution(aresponses: ResponsesMockServer) -> No
         assert energy.average_price_today == 0.00131
         assert energy.average_price_tomorrow == 0.00239
         assert energy.current_price == 0.00157
-        assert energy.hours_priced_equal_or_lower == 63
-        # The price for another hour
-        another_hour = datetime(2025, 10, 4, 17, 0, tzinfo=timezone.utc)
-        assert energy.price_at_time(another_hour) == 0.0033
+        assert energy.intervals_priced_equal_or_lower == 63
+        # The price for another interval
+        another_interval = datetime(2025, 10, 4, 17, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) == 0.0033
         assert energy.lowest_price_time_today == datetime.strptime(
             "2025-10-04 5:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
@@ -143,10 +143,10 @@ async def test_model_se1_15_minute_resolution(aresponses: ResponsesMockServer) -
         assert energy.average_price_today == 0.00113
         assert energy.average_price_tomorrow == 0.00249
         assert energy.current_price == 0.00128
-        assert energy.hours_priced_equal_or_lower == 57
-        # The price for another hour
-        another_hour = datetime(2025, 10, 4, 18, 0, tzinfo=timezone.utc)
-        assert energy.price_at_time(another_hour) == 0.00242
+        assert energy.intervals_priced_equal_or_lower == 57
+        # The price for another interval
+        another_interval = datetime(2025, 10, 4, 18, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) == 0.00242
         assert energy.lowest_price_time_today == datetime.strptime(
             "2025-10-04 03:00:00+00:00",
             "%Y-%m-%d %H:%M:%S%z",
@@ -191,10 +191,10 @@ async def test_model_no_prices_for_tomorrow(aresponses: ResponsesMockServer) -> 
         assert energy.average_price_today == 0.08935
         assert energy.average_price_tomorrow is None
         assert energy.current_price == 0.062
-        assert energy.hours_priced_equal_or_lower == 1
-        # The price for another hour
-        another_hour = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
-        assert energy.price_at_time(another_hour) == 0.1055
+        assert energy.intervals_priced_equal_or_lower == 1
+        # The price for another interval
+        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) == 0.1055
         assert energy.lowest_price_time_today == datetime.strptime(
             "2023-05-06 15:00:00+03:00",
             "%Y-%m-%d %H:%M:%S%z",
@@ -273,10 +273,10 @@ async def test_only_data_for_tomorrow(aresponses: ResponsesMockServer) -> None:
         assert energy.average_price_today is None
         assert energy.highest_price_today is None
         assert energy.lowest_price_today is None
-        assert energy.hours_priced_equal_or_lower == 0
-        # The price for another hour
-        another_hour = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
-        assert energy.price_at_time(another_hour) is None
+        assert energy.intervals_priced_equal_or_lower == 0
+        # The price for another interval
+        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) is None
         assert energy.lowest_price_time_today is None
         assert energy.highest_price_time_today is None
         assert isinstance(energy.timestamp_prices, list)
