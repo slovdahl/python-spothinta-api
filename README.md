@@ -22,7 +22,7 @@ pip install spothinta-api
 
 ## Data
 
-This client currently supports getting today's and tomorrow's hourly energy prices. The prices for tomorrow are usually published between 14:00 and 15:00. See [spot-hinta.fi API documentation][spothinta-api-docs] for more information about the available data.
+This client currently supports getting today's and tomorrow's hourly or 15-minute energy prices. The prices for tomorrow are usually published between 14:00 and 15:00. See [spot-hinta.fi API documentation][spothinta-api-docs] for more information about the available data.
 
 ## Example
 
