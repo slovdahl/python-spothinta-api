@@ -43,7 +43,7 @@ jobs:
       - name: 🚀 Run pytest
         run: poetry run pytest --cov spothinta_api tests
       - name: ⬆️ Upload coverage artifact
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: coverage-${{ matrix.python }}
           include-hidden-files: true
