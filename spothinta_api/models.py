@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -257,16 +257,33 @@ class Electricity:
             The prices for today.
 
         """
-        today = self.now_in_timezone().astimezone().date()
+        today = self.now_in_timezone().date()
         prices = {
             timestamp: price
             for timestamp, price in self.prices.items()
-            if timestamp.date() == today
+            if timestamp.astimezone(self.time_zone).date() == today
         }
 
-        if (self.resolution == timedelta(minutes=15) and len(prices) == 96) or (
-            self.resolution == timedelta(minutes=60) and len(prices) == 24
-        ):
+        # Calculate expected intervals accounting for DST transitions.
+        # On DST transition days, local time spans may be 23 or 25 hours,
+        # not 24, due to the shifted/repeated hour. We count UTC hours that
+        # correspond to the local date to handle DST correctly.
+        day_start = datetime.combine(today, datetime.min.time(), tzinfo=self.time_zone)
+        day_start_utc = day_start.astimezone(timezone.utc)
+
+        # Count UTC hours that fall within this local date
+        hour_count = 0
+        current_utc = day_start_utc
+        while current_utc.astimezone(self.time_zone).date() == today:
+            hour_count += 1
+            current_utc = current_utc + timedelta(hours=1)
+
+        expected_intervals = max(
+            1,
+            int((hour_count * timedelta(hours=1)) / self.resolution),
+        )
+
+        if len(prices) == expected_intervals:
             return prices
 
         return {}
@@ -279,16 +296,37 @@ class Electricity:
             The prices for tomorrow.
 
         """
-        tomorrow = (self.now_in_timezone() + timedelta(days=1)).astimezone().date()
+        tomorrow = (self.now_in_timezone() + timedelta(days=1)).date()
         prices = {
             timestamp: price
             for timestamp, price in self.prices.items()
-            if timestamp.date() == tomorrow
+            if timestamp.astimezone(self.time_zone).date() == tomorrow
         }
 
-        if (self.resolution == timedelta(minutes=15) and len(prices) == 96) or (
-            self.resolution == timedelta(minutes=60) and len(prices) == 24
-        ):
+        # Calculate expected intervals accounting for DST transitions.
+        # On DST transition days, local time spans may be 23 or 25 hours,
+        # not 24, due to the shifted/repeated hour. We count UTC hours that
+        # correspond to the local date to handle DST correctly.
+        day_start = datetime.combine(
+            tomorrow,
+            datetime.min.time(),
+            tzinfo=self.time_zone,
+        )
+        day_start_utc = day_start.astimezone(timezone.utc)
+
+        # Count UTC hours that fall within this local date
+        hour_count = 0
+        current_utc = day_start_utc
+        while current_utc.astimezone(self.time_zone).date() == tomorrow:
+            hour_count += 1
+            current_utc = current_utc + timedelta(hours=1)
+
+        expected_intervals = max(
+            1,
+            int((hour_count * timedelta(hours=1)) / self.resolution),
+        )
+
+        if len(prices) == expected_intervals:
             return prices
 
         return {}
