@@ -16,13 +16,13 @@ def _timed_value(
     prices: dict[datetime, float],
     resolution: timedelta,
 ) -> float | None:
-    """Return a function that returns a value at a specific time.
+    """Return a value at a specific time.
 
     Args:
     ----
         moment: The time to get the value for.
         prices: A dictionary with market prices.
-        resolution: The time resolution of price intervals (default: 15 minutes).
+        resolution: The time resolution of price intervals.
 
     Returns:
     -------
@@ -255,11 +255,11 @@ class Electricity:
         return sum(price <= current for price in self.prices_today().values())
 
     def prices_today(self) -> dict[datetime, float]:
-        """Return the prices for today.
+        """Return the prices for today, if available.
 
         Returns
         -------
-            The prices for today.
+            The prices for today, or an empty dictionary if no prices are available.
 
         """
         today = self.now_in_timezone().date()
@@ -294,11 +294,11 @@ class Electricity:
         return {}
 
     def prices_tomorrow(self) -> dict[datetime, float]:
-        """Return the prices for tomorrow.
+        """Return the prices for tomorrow, if available.
 
         Returns
         -------
-            The prices for tomorrow.
+            The prices for tomorrow, or an empty dictionary if no prices are available.
 
         """
         tomorrow = (self.now_in_timezone() + timedelta(days=1)).date()

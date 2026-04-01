@@ -458,7 +458,7 @@ async def test_model_dst_spring_forward_23h(aresponses: ResponsesMockServer) -> 
     Regression test.
     Verifies that a full local day with 92 intervals (23 hours * 4 per hour)
     is correctly recognized as complete despite being only 23 hours long.
-    This ensures DST transition days are not incorrectly  treated as partial.
+    This ensures DST transition days are not incorrectly treated as partial.
     """
     aresponses.add(
         "api.spot-hinta.fi",
