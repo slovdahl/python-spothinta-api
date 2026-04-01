@@ -285,6 +285,125 @@ async def test_only_data_for_tomorrow(aresponses: ResponsesMockServer) -> None:
         assert len(energy.timestamp_prices_today) == 0
 
 
+@pytest.mark.freeze_time("2026-04-01T14:00:10+03:00")
+async def test_model_15_minute_resolution_partial_data_tomorrow(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test the model for usage at 14:00:10 UTC+3."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy-15-min-partial-tomorrow.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices(
+            resolution=timedelta(minutes=15),
+        )
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        assert energy.highest_price_today == 0.09306
+        assert energy.highest_price_tomorrow is None
+        assert energy.lowest_price_today == 0.00341
+        assert energy.lowest_price_tomorrow is None
+        assert energy.average_price_today == 0.01734
+        assert energy.average_price_tomorrow is None
+        assert energy.current_price == 0.00626
+        assert energy.intervals_priced_equal_or_lower == 11
+        # The price for another interval
+        another_interval = datetime(2026, 4, 1, 20, 16, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) == 0.01832
+        assert energy.lowest_price_time_today == datetime.strptime(
+            "2026-04-01 15:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.lowest_price_time_tomorrow is None
+        assert energy.highest_price_time_today == datetime.strptime(
+            "2026-04-01 00:00:00+03:00",
+            "%Y-%m-%d %H:%M:%S%z",
+        )
+        assert energy.highest_price_time_tomorrow is None
+        assert isinstance(energy.timestamp_prices, list)
+
+
+@pytest.mark.freeze_time("2026-04-02T07:00:00+03:00")
+async def test_model_15_minute_resolution_partial_data_today(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test the model for usage at 07:00:00 UTC+3."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy-15-min-partial-tomorrow.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices(
+            resolution=timedelta(minutes=15),
+        )
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        assert energy.highest_price_today is None
+        assert energy.highest_price_tomorrow is None
+        assert energy.lowest_price_today is None
+        assert energy.lowest_price_tomorrow is None
+        assert energy.average_price_today is None
+        assert energy.average_price_tomorrow is None
+        assert energy.current_price is None
+        assert energy.intervals_priced_equal_or_lower == 0
+        # The price for another interval
+        another_interval = datetime(2026, 4, 2, 20, 16, tzinfo=timezone.utc)
+        assert energy.price_at_time(another_interval) is None
+        assert energy.lowest_price_time_today is None
+        assert energy.lowest_price_time_tomorrow is None
+        assert energy.highest_price_time_today is None
+        assert energy.highest_price_time_tomorrow is None
+
+        assert isinstance(energy.timestamp_prices, list)
+
+
+@pytest.mark.freeze_time("2026-04-02T00:02:00+03:00")
+async def test_model_15_minute_resolution_partial_data_today_in_interval(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test the model for usage at 14:00:10 UTC+3."""
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy-15-min-partial-tomorrow.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices(
+            resolution=timedelta(minutes=15),
+        )
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        assert energy.highest_price_today is None
+        assert energy.highest_price_tomorrow is None
+        assert energy.lowest_price_today is None
+        assert energy.lowest_price_tomorrow is None
+        assert energy.average_price_today is None
+        assert energy.average_price_tomorrow is None
+        assert energy.current_price == 0.01832
+        assert energy.intervals_priced_equal_or_lower == 0
+
+
 async def test_no_electricity_data(aresponses: ResponsesMockServer) -> None:
     """Test when there is no electricity data."""
     aresponses.add(

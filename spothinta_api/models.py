@@ -59,6 +59,7 @@ class Electricity:
     """Object representing electricity data."""
 
     prices: dict[datetime, float]
+    resolution: timedelta
     time_zone: ZoneInfo
 
     @property
@@ -257,11 +258,18 @@ class Electricity:
 
         """
         today = self.now_in_timezone().astimezone().date()
-        return {
+        prices = {
             timestamp: price
             for timestamp, price in self.prices.items()
             if timestamp.date() == today
         }
+
+        if (self.resolution == timedelta(minutes=15) and len(prices) == 96) or (
+            self.resolution == timedelta(minutes=60) and len(prices) == 24
+        ):
+            return prices
+
+        return {}
 
     def prices_tomorrow(self) -> dict[datetime, float]:
         """Return the prices for tomorrow.
@@ -272,11 +280,18 @@ class Electricity:
 
         """
         tomorrow = (self.now_in_timezone() + timedelta(days=1)).astimezone().date()
-        return {
+        prices = {
             timestamp: price
             for timestamp, price in self.prices.items()
             if timestamp.date() == tomorrow
         }
+
+        if (self.resolution == timedelta(minutes=15) and len(prices) == 96) or (
+            self.resolution == timedelta(minutes=60) and len(prices) == 24
+        ):
+            return prices
+
+        return {}
 
     def now_in_timezone(self) -> datetime:
         """Return the current timestamp in the current timezone.
@@ -329,6 +344,7 @@ class Electricity:
     def from_dict(
         cls: type[Electricity],
         data: list[dict[str, Any]],
+        resolution: timedelta,
         time_zone: ZoneInfo,
     ) -> Electricity:
         """Create an Electricity object from a dictionary.
@@ -336,6 +352,7 @@ class Electricity:
         Args:
         ----
             data: A dictionary with the data from the API.
+            resolution: The price resolution.
             time_zone: The timezone to use for determining "today" and "tomorrow".
 
         Returns:
@@ -350,5 +367,6 @@ class Electricity:
             ]
         return cls(
             prices=prices,
+            resolution=resolution,
             time_zone=time_zone,
         )
