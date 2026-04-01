@@ -486,6 +486,68 @@ async def test_model_dst_spring_forward_23h(aresponses: ResponsesMockServer) -> 
         assert energy.average_price_today is not None
 
 
+@pytest.mark.freeze_time("2023-05-06 15:30:00+03:00")
+async def test_model_60_minute_resolution_non_interval_start(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test 60-minute resolution when queried at mid-interval time.
+
+    Regression test: price_at_time() and current_price should work correctly
+    even when the queried moment is not at an interval start (e.g., 15:30
+    within the 15:00-16:00 hour). The interval logic should check if moment
+    falls within [start, start+resolution), using the actual resolution,
+    not hardcoded 15 minutes.
+    """
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices()
+        assert energy is not None
+        assert isinstance(energy, Electricity)
+        # At 15:30, we're in the 15:00-16:00 interval
+        # Should return the price for 15:00 (0.062)
+        assert energy.current_price == 0.062
+        # Also test price_at_time at a non-interval-start time
+        moment_15_30 = datetime(2023, 5, 6, 12, 30, tzinfo=timezone.utc)
+        assert energy.price_at_time(moment_15_30) == 0.062
+
+
+@pytest.mark.freeze_time("2023-05-06 15:58:00+03:00")
+async def test_model_60_minute_resolution_late_in_interval(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test 60-minute resolution at late moment in interval.
+
+    Regression test: verifies current_price works correctly at 15:58
+    (late in the 15:00-16:00 hour), not just at mid-interval times.
+    """
+    aresponses.add(
+        "api.spot-hinta.fi",
+        "/TodayAndDayForward",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("energy.json"),
+        ),
+    )
+    async with ClientSession() as session:
+        client = SpotHinta(session=session)
+        energy: Electricity = await client.energy_prices()
+        assert energy is not None
+        # At 15:58, still in the 15:00-16:00 interval
+        assert energy.current_price == 0.062
+
+
 @pytest.mark.freeze_time("2026-10-25 11:00:00Z")
 async def test_model_dst_fall_back_25h(aresponses: ResponsesMockServer) -> None:
     """DST fall back (25-hour day) on 2026-10-25 in Europe/Stockholm.

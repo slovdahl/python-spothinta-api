@@ -11,13 +11,18 @@ if TYPE_CHECKING:
     from zoneinfo import ZoneInfo
 
 
-def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | None:
+def _timed_value(
+    moment: datetime,
+    prices: dict[datetime, float],
+    resolution: timedelta,
+) -> float | None:
     """Return a function that returns a value at a specific time.
 
     Args:
     ----
         moment: The time to get the value for.
         prices: A dictionary with market prices.
+        resolution: The time resolution of price intervals (default: 15 minutes).
 
     Returns:
     -------
@@ -26,7 +31,7 @@ def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | Non
     """
     value = None
     for timestamp, price in prices.items():
-        future_dt = timestamp + timedelta(minutes=15)
+        future_dt = timestamp + resolution
         if timestamp <= moment < future_dt:
             value = round(price, 5)
     return value
@@ -373,7 +378,7 @@ class Electricity:
             The price at the specified time.
 
         """
-        value = _timed_value(moment, self.prices)
+        value = _timed_value(moment, self.prices, self.resolution)
         if value is not None or value == 0:
             return value
         return None
