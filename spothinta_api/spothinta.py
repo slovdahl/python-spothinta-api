@@ -161,7 +161,7 @@ class SpotHinta:
             raise SpotHintaNoDataError(msg)
 
         time_zone = await async_get_time_zone(REGION_TO_TIMEZONE[region])
-        return Electricity.from_dict(data, time_zone=time_zone)
+        return Electricity.from_dict(data, resolution=resolution, time_zone=time_zone)
 
     async def close(self) -> None:
         """Close open client session."""

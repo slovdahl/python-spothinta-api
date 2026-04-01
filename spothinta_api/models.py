@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -11,13 +11,18 @@ if TYPE_CHECKING:
     from zoneinfo import ZoneInfo
 
 
-def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | None:
-    """Return a function that returns a value at a specific time.
+def _timed_value(
+    moment: datetime,
+    prices: dict[datetime, float],
+    resolution: timedelta,
+) -> float | None:
+    """Return a value at a specific time.
 
     Args:
     ----
         moment: The time to get the value for.
         prices: A dictionary with market prices.
+        resolution: The time resolution of price intervals.
 
     Returns:
     -------
@@ -26,7 +31,7 @@ def _timed_value(moment: datetime, prices: dict[datetime, float]) -> float | Non
     """
     value = None
     for timestamp, price in prices.items():
-        future_dt = timestamp + timedelta(minutes=15)
+        future_dt = timestamp + resolution
         if timestamp <= moment < future_dt:
             value = round(price, 5)
     return value
@@ -59,6 +64,7 @@ class Electricity:
     """Object representing electricity data."""
 
     prices: dict[datetime, float]
+    resolution: timedelta
     time_zone: ZoneInfo
 
     @property
@@ -249,34 +255,86 @@ class Electricity:
         return sum(price <= current for price in self.prices_today().values())
 
     def prices_today(self) -> dict[datetime, float]:
-        """Return the prices for today.
+        """Return the prices for today, if available.
 
         Returns
         -------
-            The prices for today.
+            The prices for today, or an empty dictionary if no prices are available.
 
         """
-        today = self.now_in_timezone().astimezone().date()
-        return {
+        today = self.now_in_timezone().date()
+        prices = {
             timestamp: price
             for timestamp, price in self.prices.items()
-            if timestamp.date() == today
+            if timestamp.astimezone(self.time_zone).date() == today
         }
+
+        # Calculate expected intervals accounting for DST transitions.
+        # On DST transition days, local time spans may be 23 or 25 hours,
+        # not 24, due to the shifted/repeated hour. We count UTC hours that
+        # correspond to the local date to handle DST correctly.
+        day_start = datetime.combine(today, datetime.min.time(), tzinfo=self.time_zone)
+        day_start_utc = day_start.astimezone(timezone.utc)
+
+        # Count UTC hours that fall within this local date
+        hour_count = 0
+        current_utc = day_start_utc
+        while current_utc.astimezone(self.time_zone).date() == today:
+            hour_count += 1
+            current_utc = current_utc + timedelta(hours=1)
+
+        expected_intervals = max(
+            1,
+            int((hour_count * timedelta(hours=1)) / self.resolution),
+        )
+
+        if len(prices) == expected_intervals:
+            return prices
+
+        return {}
 
     def prices_tomorrow(self) -> dict[datetime, float]:
-        """Return the prices for tomorrow.
+        """Return the prices for tomorrow, if available.
 
         Returns
         -------
-            The prices for tomorrow.
+            The prices for tomorrow, or an empty dictionary if no prices are available.
 
         """
-        tomorrow = (self.now_in_timezone() + timedelta(days=1)).astimezone().date()
-        return {
+        tomorrow = (self.now_in_timezone() + timedelta(days=1)).date()
+        prices = {
             timestamp: price
             for timestamp, price in self.prices.items()
-            if timestamp.date() == tomorrow
+            if timestamp.astimezone(self.time_zone).date() == tomorrow
         }
+
+        # Calculate expected intervals accounting for DST transitions.
+        # On DST transition days, local time spans may be 23 or 25 hours,
+        # not 24, due to the shifted/repeated hour. We count UTC hours that
+        # correspond to the local date to handle DST correctly.
+        day_start = datetime.combine(
+            tomorrow,
+            datetime.min.time(),
+            tzinfo=self.time_zone,
+        )
+        day_start_utc = day_start.astimezone(timezone.utc)
+
+        # Count UTC hours that fall within this local date
+        hour_count = 0
+        current_utc = day_start_utc
+        while current_utc.astimezone(self.time_zone).date() == tomorrow:
+            hour_count += 1
+            current_utc = current_utc + timedelta(hours=1)
+
+        expected_intervals = max(
+            1,
+            int((hour_count * timedelta(hours=1)) / self.resolution),
+        )
+
+        if len(prices) == expected_intervals:
+            return prices
+
+        return {}
 
     def now_in_timezone(self) -> datetime:
         """Return the current timestamp in the current timezone.
@@ -320,7 +378,7 @@ class Electricity:
             The price at the specified time.
 
         """
-        value = _timed_value(moment, self.prices)
+        value = _timed_value(moment, self.prices, self.resolution)
         if value is not None or value == 0:
             return value
         return None
@@ -329,6 +387,7 @@ class Electricity:
     def from_dict(
         cls: type[Electricity],
         data: list[dict[str, Any]],
+        resolution: timedelta,
         time_zone: ZoneInfo,
     ) -> Electricity:
         """Create an Electricity object from a dictionary.
@@ -336,6 +395,7 @@ class Electricity:
         Args:
         ----
             data: A dictionary with the data from the API.
+            resolution: The price resolution.
             time_zone: The timezone to use for determining "today" and "tomorrow".
 
         Returns:
@@ -350,5 +410,6 @@ class Electricity:
             ]
         return cls(
             prices=prices,
+            resolution=resolution,
             time_zone=time_zone,
         )
