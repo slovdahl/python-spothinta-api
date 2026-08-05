@@ -146,6 +146,7 @@ ignore = [
   "D213", # Conflicts with other rules
   "D417", # False positives in some occasions
   "PLR2004", # Just annoying, not really useful
+  "CPY001", # No copyright headers in source files needed
 ]
 
 [tool.ruff.lint.flake8-pytest-style]
