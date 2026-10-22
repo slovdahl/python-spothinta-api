@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import socket
 from dataclasses import dataclass
 from datetime import timedelta
@@ -27,7 +26,7 @@ from .exceptions import (
 from .models import Electricity
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 VERSION = metadata.version(__package__)
 
@@ -94,7 +93,7 @@ class SpotHinta:
                     ssl=True,
                 )
                 response.raise_for_status()
-        except asyncio.TimeoutError as ex:
+        except TimeoutError as ex:
             msg = "Timeout occurred while connecting to the API."
             raise SpotHintaConnectionError(
                 msg,

@@ -12,7 +12,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -31,7 +30,7 @@ example = "examples.energy:start"
 aiohttp = ">=3.0.0"
 aiozoneinfo = "0.*"
 async-timeout = ">=4.0.3,<6.0.0"
-python = "^3.10"
+python = "^3.11"
 yarl = ">=1.6.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -139,7 +138,7 @@ addopts = "--cov"
 asyncio_mode = "auto"
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["ALL"]

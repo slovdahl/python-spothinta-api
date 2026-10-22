@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -274,7 +274,7 @@ class Electricity:
         # not 24, due to the shifted/repeated hour. We count UTC hours that
         # correspond to the local date to handle DST correctly.
         day_start = datetime.combine(today, datetime.min.time(), tzinfo=self.time_zone)
-        day_start_utc = day_start.astimezone(timezone.utc)
+        day_start_utc = day_start.astimezone(UTC)
 
         # Count UTC hours that fall within this local date
         hour_count = 0
@@ -317,7 +317,7 @@ class Electricity:
             datetime.min.time(),
             tzinfo=self.time_zone,
         )
-        day_start_utc = day_start.astimezone(timezone.utc)
+        day_start_utc = day_start.astimezone(UTC)
 
         # Count UTC hours that fall within this local date
         hour_count = 0
