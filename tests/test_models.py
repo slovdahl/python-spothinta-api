@@ -1,6 +1,6 @@
 """Test the models."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -45,7 +45,7 @@ async def test_model(aresponses: ResponsesMockServer) -> None:
         assert energy.current_price == 0.062
         assert energy.intervals_priced_equal_or_lower == 1
         # The price for another interval
-        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=UTC)
         assert energy.price_at_time(another_interval) == 0.1055
         assert energy.lowest_price_time_today == datetime.strptime(
             "2023-05-06 15:00:00+03:00",
@@ -95,7 +95,7 @@ async def test_model_15_minute_resolution(aresponses: ResponsesMockServer) -> No
         assert energy.current_price == 0.00157
         assert energy.intervals_priced_equal_or_lower == 63
         # The price for another interval
-        another_interval = datetime(2025, 10, 4, 17, 0, tzinfo=timezone.utc)
+        another_interval = datetime(2025, 10, 4, 17, 0, tzinfo=UTC)
         assert energy.price_at_time(another_interval) == 0.0033
         assert energy.lowest_price_time_today == datetime.strptime(
             "2025-10-04 5:00:00+03:00",
@@ -146,7 +146,7 @@ async def test_model_se1_15_minute_resolution(aresponses: ResponsesMockServer) -
         assert energy.current_price == 0.00128
         assert energy.intervals_priced_equal_or_lower == 51
         # The price for another interval
-        another_interval = datetime(2025, 10, 4, 18, 0, tzinfo=timezone.utc)
+        another_interval = datetime(2025, 10, 4, 18, 0, tzinfo=UTC)
         assert energy.price_at_time(another_interval) == 0.00242
         assert energy.lowest_price_time_today == datetime.strptime(
             "2025-10-04 03:00:00+00:00",
@@ -170,7 +170,7 @@ async def test_model_se1_15_minute_resolution(aresponses: ResponsesMockServer) -
 @pytest.mark.freeze_time("2025-10-04 16:00:00+02:00")
 async def test_prices_today_uses_region_local_date_for_utc_timestamps() -> None:
     """Use local date boundaries for SE1 even when source timestamps are UTC."""
-    start_utc = datetime(2025, 10, 3, 22, 0, tzinfo=timezone.utc)
+    start_utc = datetime(2025, 10, 3, 22, 0, tzinfo=UTC)
     prices = {start_utc + i * timedelta(minutes=15): i / 100000 for i in range(96)}
     energy = Electricity(
         prices=prices,
@@ -214,7 +214,7 @@ async def test_model_no_prices_for_tomorrow(aresponses: ResponsesMockServer) -> 
         assert energy.current_price == 0.062
         assert energy.intervals_priced_equal_or_lower == 1
         # The price for another interval
-        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=UTC)
         assert energy.price_at_time(another_interval) == 0.1055
         assert energy.lowest_price_time_today == datetime.strptime(
             "2023-05-06 15:00:00+03:00",
@@ -296,7 +296,7 @@ async def test_only_data_for_tomorrow(aresponses: ResponsesMockServer) -> None:
         assert energy.lowest_price_today is None
         assert energy.intervals_priced_equal_or_lower == 0
         # The price for another interval
-        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=timezone.utc)
+        another_interval = datetime(2023, 5, 6, 17, 0, tzinfo=UTC)
         assert energy.price_at_time(another_interval) is None
         assert energy.lowest_price_time_today is None
         assert energy.highest_price_time_today is None
@@ -337,7 +337,7 @@ async def test_model_15_minute_resolution_partial_data_tomorrow(
         assert energy.current_price == 0.00626
         assert energy.intervals_priced_equal_or_lower == 11
         # The price for another interval
-        another_interval = datetime(2026, 4, 1, 20, 16, tzinfo=timezone.utc)
+        another_interval = datetime(2026, 4, 1, 20, 16, tzinfo=UTC)
         assert energy.price_at_time(another_interval) == 0.01832
         assert energy.lowest_price_time_today == datetime.strptime(
             "2026-04-01 15:00:00+03:00",
@@ -383,7 +383,7 @@ async def test_model_15_minute_resolution_partial_data_today(
         assert energy.current_price is None
         assert energy.intervals_priced_equal_or_lower == 0
         # The price for another interval
-        another_interval = datetime(2026, 4, 2, 20, 16, tzinfo=timezone.utc)
+        another_interval = datetime(2026, 4, 2, 20, 16, tzinfo=UTC)
         assert energy.price_at_time(another_interval) is None
         assert energy.lowest_price_time_today is None
         assert energy.lowest_price_time_tomorrow is None
@@ -517,7 +517,7 @@ async def test_model_60_minute_resolution_non_interval_start(
         # Should return the price for 15:00 (0.062)
         assert energy.current_price == 0.062
         # Also test price_at_time at a non-interval-start time
-        moment_15_30 = datetime(2023, 5, 6, 12, 30, tzinfo=timezone.utc)
+        moment_15_30 = datetime(2023, 5, 6, 12, 30, tzinfo=UTC)
         assert energy.price_at_time(moment_15_30) == 0.062
 
 
